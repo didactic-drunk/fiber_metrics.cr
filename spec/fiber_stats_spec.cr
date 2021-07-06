@@ -3,7 +3,7 @@ require "./spec_helper"
 class C
 #  include Fiber::Stats
 
-  @fiber_stats = Fiber::Stats::MapT.new
+#  @fiber_stats = Fiber::Stats::MapT.new
 
   def run
     Fiber.measure(:run) do
@@ -33,8 +33,9 @@ describe Fiber do
   it "works" do
     Fiber.current.name = "c"
     c = C.new
-    c.run
+#    c.run
 
-    c.recur 3
+    c.recur 2
+    pp Fiber.current.@measuring
   end
 end
