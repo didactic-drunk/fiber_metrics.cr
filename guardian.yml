@@ -1,0 +1,5 @@
+files: ./{src,spec}/**/*.cr
+run: crystal spec --error-trace
+---
+files: ./shard.yml
+run: shards install
