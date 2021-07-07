@@ -1,116 +1,23 @@
-require "random/secure"
-
 class Fiber
-  # :nodoc:
-  enum TrackingType
-    Unused
-    Sum
-    Measure
-    Blocking
-    Idle
-  end
-
-  # :nodoc:
-  class CallMeasure
-    property mem = 0_u64
-    property tt = Time::Span.new
-    property rt = Time::Span.new
-    property idle = Time::Span.new
-    property blocking = Time::Span.new
-    property calls = 0_u64
-    @start_time = uninitialized Time::Span
-    property t_type = TrackingType::Measure
-    # BUG: temp debugging
-    @mi = 0
-
-    def measure(meth_name, name, @t_type, prev : CallMeasure, @mi)
-      init
-      yield
-    ensure
-      elapsed = Time.monotonic - @start_time
-
-      _tt = tt + elapsed
-      _idle = idle
-      _blocking = blocking
-      _rt = rt
-
-      elapsed -= _rt + _idle + _blocking
-
-      case @t_type
-        in TrackingType::Measure
-          _rt += elapsed
-        in TrackingType::Idle
-          _idle += elapsed
-        in TrackingType::Blocking
-          _blocking += elapsed
-        in TrackingType::Unused, TrackingType::Sum
-          abort "impossible condition #{self}"
-      end
-
-      @tt = _tt
-      @rt = _rt
-      @idle = _idle
-      @blocking = _blocking
-
-      prev.add_from self
-#      @t_type = TrackingType::Unused
-
-#      puts "#{meth_name} #{name} #{elapsed}"
-    end
-
-    def track_malloc(size)
-      @mem += size
-      STDOUT << @t_type.to_s << " mi=" << @mi << " size=" << size << "\n"
-    end
-
-    def track_realloc(ptr, size)
-      # BUG: sub old allocate size
-      @mem += size
-    end
-
-    def add_from(other : self)
-      @mem += other.mem
-      @tt += other.tt if @t_type == TrackingType::Sum
-      @rt += other.rt
-      @idle += other.idle
-      @blocking += other.blocking
-      @calls += other.calls
-    end
-
-    private def init
-      @start_time = Time.monotonic
-      reset
-    end
-
-    def reset
-      @mem = 0_u64
-      @tt = Time::Span.new
-      @rt = Time::Span.new
-      @idle = Time::Span.new
-      @blocked = Time::Span.new
-      @calls = 0_u64
-    end
-  end
-
-  alias NameSummaryT = Hash(String|Symbol|Nil, CallMeasure)
+  alias NameSummaryT = Hash(String|Symbol|Nil, CallTrack)
   alias MethodSummaryT = Hash(String, NameSummaryT)
 
   @@msummary = MethodSummaryT.new do |h, k|
     h[k] = NameSummaryT.new do |h2, k2|
-      h2[k2] = CallMeasure.new.tap { |cm| cm.t_type = TrackingType::Sum }
+      h2[k2] = CallTrack.new.tap { |cm| cm.t_type = TrackingType::Sum }
     end
   end
 
-  private getter measure_data : Tuple(Array(CallMeasure), MethodSummaryT) do
-    stack = Array(CallMeasure).new.tap do |ma|
+  private getter measure_data : Tuple(Array(CallTrack), MethodSummaryT) do
+    stack = Array(CallTrack).new.tap do |ma|
       # Sum of entire Fiber
-      ma << CallMeasure.new.tap { |cm| cm.t_type = TrackingType::Sum }
-      ma << CallMeasure.new
+      ma << CallTrack.new.tap { |cm| cm.t_type = TrackingType::Sum }
+      ma << CallTrack.new
     end
 
     msummary = MethodSummaryT.new do |h, k|
       h[k] = NameSummaryT.new do |h2, k2|
-        h2[k2] = CallMeasure.new.tap { |cm| cm.t_type = TrackingType::Sum }
+        h2[k2] = CallTrack.new.tap { |cm| cm.t_type = TrackingType::Sum }
       end
     end
 
@@ -130,6 +37,12 @@ class Fiber
     end
   end
 
+  macro measure_blocking(name = nil)
+    Fiber.current.measure_internal \{{"#{@type.name.id}.#{@def.name.id}"}}, {{name}}, Fiber::TrackingType::Blocking do
+      {{ yield }}
+    end
+  end
+
   macro measure_method(sym)
   end
 
@@ -140,19 +53,18 @@ class Fiber
     cm = if mi < stack.size
            stack[mi]
          else
-           m = CallMeasure.new
+           m = CallTrack.new
            stack << m
            m
          end
     prev = stack[mi - 1]
 
-#    @measuring_idx = mi
     begin
 if true
 #if false
 #      puts "enter mi=#{@measuring_idx} #{name}"
-puts "enter"
-puts "enter mi=#{@measuring_idx}"
+      puts "enter"
+#puts "enter mi=#{@measuring_idx}"
 #      puts "\t#{cm.inspect}"
 #      puts "\t#{prev.inspect}"
 end
@@ -211,7 +123,7 @@ STDOUT << "track_malloc mi=" << @measuring_idx << " size=" << size << "\n"
   private MSUMMARY_MUTEX = Mutex.new
 
   def self.stats
-    hash = Hash(String, CallMeasure).new
+    hash = Hash(String, CallTrack).new
     MSUMMARY_MUTEX.synchronize do
       @@msummary.each do |mkey, nsum|
           nsum.each do |nkey, calls|
