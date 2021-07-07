@@ -4,5 +4,4 @@ module Fiber::Stats
   # TODO: Put your code here
 end
 
-require "./*"
 require "./fiber_stats/*"

@@ -1,6 +1,6 @@
 # fiber_stats
 
-TODO: Write a description here
+WIP: Currently debugging
 
 ## Installation
 
@@ -21,20 +21,24 @@ require "fiber_stats"
 
 class Example
   def run
-    Fiber.measure "running" do
+    Fiber.measure :running do
       # ...
 
-      Fiber.idle do
+      Fiber.idle :sleep do
         sleep 0.2
       end
     end
   end
-#  measure_method :run
 
   C.new.run
   Fiber.print_stats
 end
+```
 
+Output:
+```
+C.run,running tt:   0.216 rt:   0.002 idle:   0.214                   calls:      1
+C.run,sleep   tt:   0.214             idle:   0.214                   calls:      1              
 ```
 
 TODO: Write usage instructions here
