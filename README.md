@@ -30,6 +30,9 @@ class Example
     end
   end
 #  measure_method :run
+
+  C.new.run
+  Fiber.print_stats
 end
 
 ```
