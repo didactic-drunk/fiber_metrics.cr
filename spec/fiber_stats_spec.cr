@@ -20,7 +20,8 @@ class C
 
     Fiber.measure do
       puts "bytes"
-      b = Bytes.new 4
+#      10.times { b = Bytes.new 4000 }
+      10.times { GC.malloc_atomic 4000 }
       sleep 0.1
       Fiber.measure_idle :sleep do
         sleep 0.1
@@ -54,8 +55,7 @@ describe Fiber do
       ch.receive
     end
 
-    Fiber.yield
-
+    Fiber.stats_debug = false
 #    pp Fiber.current.@measure_data.not_nil![0]
  #   pp Fiber.current.@measure_data.not_nil![1]
 

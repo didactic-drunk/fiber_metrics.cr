@@ -25,6 +25,7 @@ class Fiber
   end
   @measuring_idx = 0
 
+  @[Experimental]
   macro measure(name = nil)
     Fiber.current.measure_internal \{{"#{@type.name.id}.#{@def.name.id}"}}, {{name}}, Fiber::TrackingType::Measure do
       {{ yield }}
@@ -46,6 +47,11 @@ class Fiber
   macro measure_method(sym)
   end
 
+  @@stats_debug = false
+  def self.stats_debug=(val)
+    @@stats_debug = val
+  end
+
   # :nodoc:
   def measure_internal(meth_name : String, name : Symbol | String | Nil, t_type)
     stack, msummary = measure_data
@@ -60,10 +66,10 @@ class Fiber
     prev = stack[mi - 1]
 
     begin
-if true
+if @@stats_debug
 #if false
-#      puts "enter mi=#{@measuring_idx} #{name}"
-      puts "enter"
+      STDOUT << "enter mi=" << @measuring_idx << "\n"
+#      STDOUT << "enter" << "\n"
 #puts "enter mi=#{@measuring_idx}"
 #      puts "\t#{cm.inspect}"
 #      puts "\t#{prev.inspect}"
@@ -92,9 +98,10 @@ end
   # :nodoc:
   def track_malloc(size) : Nil
     stack, msummary = measure_data
-    calls = stack[@measuring_idx]
-STDOUT << "track_malloc mi=" << @measuring_idx << " size=" << size << "\n"
-    calls.track_malloc size
+    mi = @measuring_idx
+    calls = stack[mi]
+STDOUT << "track_malloc mi=" << @measuring_idx << " size=" << size << "\n" if @@stats_debug
+    calls.track_malloc size, mi, @@stats_debug
   end
 
   # :nodoc:
@@ -136,7 +143,7 @@ STDOUT << "track_malloc mi=" << @measuring_idx << " size=" << size << "\n"
   end
 
   private FFMT = "%8.3f"
-  private IFMT = "%7d"
+  private IFMT = "%8d"
 
   def self.print_stats(io = STDOUT) : Nil
     key_size_max = 0
@@ -152,7 +159,7 @@ STDOUT << "track_malloc mi=" << @measuring_idx << " size=" << size << "\n"
       print_val(io, "idle:", " ", FFMT, 12, nsum.idle)
       print_val(io, "blkd:", " ", FFMT, 12, nsum.blocking)
       print_val(io, "calls:", " ", IFMT, 8, nsum.calls)
-      print_val(io, "mem:", " ", IFMT, 8, nsum.mem)
+      print_val(io, "mem:", "K ", IFMT, 8, nsum.mem/1024)
 
       io << "\n"
     end

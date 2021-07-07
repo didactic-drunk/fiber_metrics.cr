@@ -4,9 +4,9 @@ module GC
   @@track_malloc_func : TrackMallocCallback = ->(size : LibC::SizeT) { }
   @@track_realloc_func : TrackReallocCallback = ->(ptr : Void*, size : LibC::SizeT) { }
 
-  def self.set_tracking_funcs(malloc_cb : TrackMallocCallback, realloc_cb : TrackReallocCallback)
+  def self.set_tracking_funcs(malloc_cb : TrackMallocCallback, realloc_cb : TrackReallocCallback?)
     @@track_malloc_func = malloc_cb
-    @@track_realloc_func = realloc_cb
+#    @@track_realloc_func = realloc_cb if realloc_cb
   end
 
   def self.malloc(size : Int) : Void*
@@ -26,8 +26,9 @@ module GC
 
   def self.enable_memory_tracking
     mcb = ->(size : LibC::SizeT) { Fiber.current.track_malloc size }
+    recb = nil
 #    recb = ->(ptr : Void*, size : LibC::SizeT) { Fiber.current.track_realloc ptr, size }
-    recb = ->(ptr : Void*, size : LibC::SizeT) { }
+#    recb = ->(ptr : Void*, size : LibC::SizeT) { }
     set_tracking_funcs mcb, recb
   end
 end
