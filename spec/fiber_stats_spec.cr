@@ -1,5 +1,7 @@
 require "./spec_helper"
 
+STDOUT.sync = true
+
 class C
   def run
     Fiber.measure(:run) do
@@ -17,6 +19,8 @@ class C
     end
 
     Fiber.measure do
+      puts "bytes"
+      b = Bytes.new 4
       sleep 0.1
       Fiber.measure_idle :sleep do
         sleep 0.1
@@ -37,7 +41,7 @@ describe Fiber do
     c = C.new
 #    c.run
 
-    fibers = 4
+    fibers = 1
     depth = 4
 
     fibers.times do
