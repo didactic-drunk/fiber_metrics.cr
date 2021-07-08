@@ -154,10 +154,10 @@ STDOUT << "track_malloc mi=" << @measuring_idx << " size=" << size << "\n" if @@
       io << key
       pad(io, key_size_max + 1 - key.bytesize)
 
-      print_val(io, "tt:", " ", FFMT, 12, nsum.tt)
-      print_val(io, "rt:", " ", FFMT, 12, nsum.rt)
-      print_val(io, "idle:", " ", FFMT, 12, nsum.idle)
-      print_val(io, "blkd:", " ", FFMT, 12, nsum.blocking)
+      print_val(io, "tt:", " ", FFMT, 8, nsum.tt)
+      print_val(io, "rt:", " ", FFMT, 8, nsum.rt)
+      print_val(io, "idle:", " ", FFMT, 8, nsum.idle)
+      print_val(io, "blkd:", " ", FFMT, 8, nsum.blocking)
       print_val(io, "calls:", " ", IFMT, 8, nsum.calls)
       print_val(io, "mem:", "K ", IFMT, 8, nsum.mem/1024)
 

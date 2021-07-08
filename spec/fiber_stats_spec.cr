@@ -20,8 +20,10 @@ class C
 
     Fiber.measure do
       puts "bytes"
-#      10.times { b = Bytes.new 4000 }
-      10.times { GC.malloc_atomic 4000 }
+      ary = Array(Int32).new
+      1000.times { ary << 0 }
+      2.times { Bytes.new 8192 }
+      2.times { GC.malloc_atomic 1024 }
       sleep 0.1
       Fiber.measure_idle :sleep do
         sleep 0.1
@@ -38,12 +40,14 @@ describe Fiber do
   it "works" do
     Fiber.current.name = "c"
 
+    Fiber.stats_debug = true
+
     ch = Channel(Nil).new
     c = C.new
 #    c.run
 
     fibers = 1
-    depth = 4
+    depth = 1
 
     fibers.times do
       spawn do
