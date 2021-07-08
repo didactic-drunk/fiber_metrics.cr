@@ -56,9 +56,9 @@ class Fiber
 #      puts "#{meth_name} #{name} #{elapsed}"
     end
 
-    def track_malloc(size)
+    def track_malloc(size, mi, debug)
       @mem += size
-      STDOUT << @t_type.to_s << " mi=" << @mi << " size=" << size << "\n"
+#      STDOUT << @t_type.to_s << " mi=" << mi << " size=" << size << "\n" if debug
     end
 
     def track_realloc(ptr, size)

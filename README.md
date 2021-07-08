@@ -37,8 +37,8 @@ end
 
 Output:
 ```
-C.run,running tt:   0.216 rt:   0.002 idle:   0.214                   calls:      1
-C.run,sleep   tt:   0.214             idle:   0.214                   calls:      1              
+Example.run,running tt:   0.216 rt:   0.002 idle:   0.214                   calls:      1
+Example.run,sleep   tt:   0.214             idle:   0.214                   calls:      1              
 ```
 
 TODO: Write usage instructions here
