@@ -51,6 +51,7 @@ describe Fiber do
 
     fibers.times do
       spawn do
+        Fiber.current.name = "spec"
         c.recur depth
         ch.send nil
       end

@@ -56,24 +56,16 @@ class Fiber
   def measure_internal(meth_name : String, name : Symbol | String | Nil, t_type)
     stack, msummary = measure_data
     mi = @measuring_idx += 1
-    cm = if mi < stack.size
-           stack[mi]
-         else
-           m = CallTrack.new
-           stack << m
-           m
-         end
+    if @@stats_debug
+      self.to_s(STDOUT)
+      STDOUT << " enter mi=" << @measuring_idx << " 1 ssize=" << stack.size <<  "\n"
+    end
+    cm = stack[mi]
+    # Keep one additional CallTrack on end to alloc malloc tracking of CallTrack.new
+    stack << CallTrack.new unless stack.size > mi + 1
     prev = stack[mi - 1]
 
     begin
-if @@stats_debug
-#if false
-      STDOUT << "enter mi=" << @measuring_idx << "\n"
-#      STDOUT << "enter" << "\n"
-#puts "enter mi=#{@measuring_idx}"
-#      puts "\t#{cm.inspect}"
-#      puts "\t#{prev.inspect}"
-end
       cm.measure(meth_name, name, t_type, prev, mi) do
         yield
       end
@@ -87,38 +79,31 @@ end
         aggregate_stats
       end
 
-if false
-      puts "exit mi=#{@measuring_idx} #{name}"
-      puts "\t#{cm.inspect}"
-      puts "\t#{prev.inspect}"
-end
+    if @@stats_debug
+      self.to_s(STDOUT)
+      STDOUT << " exit mi=" << @measuring_idx << "\n"
+    end
     end
   end
 
   @in_tracking_func = false
 
   # :nodoc:
+  # Can't allocate memory in this method
   def track_malloc(size) : Nil
-    return if @in_tracking_func || @measuring_idx == 0
+    return if @in_tracking_func
 
+    mi = @measuring_idx
     @in_tracking_func = true
     begin
-      stack, msummary = measure_data
-      mi = @measuring_idx
-      calls = stack[mi]
-#STDOUT << "track_malloc mi=" << @measuring_idx << " size=" << size << "\n" if @@stats_debug
-      calls.track_malloc size, mi, @@stats_debug
+      if stack_msummary = @measure_data
+        stack = stack_msummary[0]
+        calls = stack[mi]
+        calls.track_malloc size, mi, @@stats_debug
+      end
     ensure
       @in_tracking_func = false
     end
-  end
-
-
-  # :nodoc:
-  def track_realloc(ptr, size) : Nil
-#      stack, msummary = measure_data
-#      calls = stack[@measuring_idx]
-#      calls.track_realloc ptr, size
   end
 
   # :nodoc:
