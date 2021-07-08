@@ -95,20 +95,30 @@ end
     end
   end
 
+  @in_tracking_func = false
+
   # :nodoc:
   def track_malloc(size) : Nil
-    stack, msummary = measure_data
-    mi = @measuring_idx
-    calls = stack[mi]
-STDOUT << "track_malloc mi=" << @measuring_idx << " size=" << size << "\n" if @@stats_debug
-    calls.track_malloc size, mi, @@stats_debug
+    return if @in_tracking_func || @measuring_idx == 0
+
+    @in_tracking_func = true
+    begin
+      stack, msummary = measure_data
+      mi = @measuring_idx
+      calls = stack[mi]
+#STDOUT << "track_malloc mi=" << @measuring_idx << " size=" << size << "\n" if @@stats_debug
+      calls.track_malloc size, mi, @@stats_debug
+    ensure
+      @in_tracking_func = false
+    end
   end
+
 
   # :nodoc:
   def track_realloc(ptr, size) : Nil
-    stack, msummary = measure_data
-    calls = stack[@measuring_idx]
-    calls.track_realloc ptr, size
+#      stack, msummary = measure_data
+#      calls = stack[@measuring_idx]
+#      calls.track_realloc ptr, size
   end
 
   # :nodoc:
