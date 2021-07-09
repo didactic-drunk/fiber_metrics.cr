@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Crystal Docs 0.36.1">
+<meta name="crystal_docs.project_version" content="main">
+<meta name="crystal_docs.project_name" content="fiber_stats">
+
+
+
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/doc.js"></script>
+
+  <meta name="repository-name" content="fiber_stats">
+  <title>Fiber - fiber_stats main</title>
+  <script type="text/javascript">
+    CrystalDocs.base_path = "";
+  </script>
+</head>
+<body>
+
+<svg class="hidden">
+  <symbol id="octicon-link" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+  </symbol>
+</svg>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="project-summary">
+      <h1 class="project-name">
+        <a href="index.html">
+          fiber_stats
+        </a>
+      </h1>
+
+      <span class="project-version">
+        main
+      </span>
+    </div>
+  </div>
+
+  <div class="search-results hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class=" " data-id="fiber_stats/Channel" data-name="channel(t)">
+      <a href="Channel.html">Channel</a>
+      
+    </li>
+  
+  <li class="parent open current" data-id="fiber_stats/Fiber" data-name="fiber">
+      <a href="Fiber.html">Fiber</a>
+      
+        <ul>
+  
+  <li class=" " data-id="fiber_stats/Fiber/MethodSummaryT" data-name="fiber::methodsummaryt">
+      <a href="Fiber/MethodSummaryT.html">MethodSummaryT</a>
+      
+    </li>
+  
+  <li class=" " data-id="fiber_stats/Fiber/NameSummaryT" data-name="fiber::namesummaryt">
+      <a href="Fiber/NameSummaryT.html">NameSummaryT</a>
+      
+    </li>
+  
+  <li class=" " data-id="fiber_stats/Fiber/Stats" data-name="fiber::stats">
+      <a href="Fiber/Stats.html">Stats</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="fiber_stats/GC" data-name="gc">
+      <a href="GC.html">GC</a>
+      
+        <ul>
+  
+  <li class=" " data-id="fiber_stats/GC/TrackMallocCallback" data-name="gc::trackmalloccallback">
+      <a href="GC/TrackMallocCallback.html">TrackMallocCallback</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1 class="type-name">
+
+  <span class="kind">class</span> Fiber
+
+</h1>
+
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="Fiber.html">Fiber</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+
+
+
+
+  <h2>
+    <a id="overview" class="anchor" href="#overview">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Overview
+  </h2>
+
+  <p>A <code><a href="Fiber.html">Fiber</a></code> is a light-weight execution unit managed by the Crystal runtime.</p>
+
+<p>It is conceptually similar to an operating system thread but with less
+overhead and completely internal to the Crystal process. The runtime includes
+a scheduler which schedules execution of fibers.</p>
+
+<p>A <code><a href="Fiber.html">Fiber</a></code> has a stack size of <code>8 MiB</code> which is usually also assigned
+to an operating system thread. But only <code>4KiB</code> are actually allocated at first
+so the memory footprint is very small.</p>
+
+<p>Communication between fibers is usually passed through <code><a href="Channel.html">Channel</a></code>.</p>
+
+<h2><a id="cooperative" class="anchor" href="#cooperative">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Cooperative</h2>
+
+<p>Fibers are cooperative. That means execution can only be drawn from a fiber
+when it offers it. It can't be interrupted in its execution at random.
+In order to make concurrency work, fibers must make sure to occasionally
+provide hooks for the scheduler to swap in other fibers.
+IO operations like reading from a file descriptor are natural implementations
+for this and the developer does not need to take further action on that. When
+IO access can't be served immediately by a buffer, the fiber will
+automatically wait and yield execution. When IO is ready it's going to be
+resumed through the event loop.</p>
+
+<p>When a computation-intensive task has none or only rare IO operations, a fiber
+should explicitly offer to yield execution from time to time using
+<code>Fiber.yield</code> to break up tight loops. The frequency of this call depends on
+the application and concurrency model.</p>
+
+<h2><a id="event-loop" class="anchor" href="#event-loop">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Event loop</h2>
+
+<p>The event loop is responsible for keeping track of sleeping fibers waiting for
+notifications that IO is ready or a timeout reached. When a fiber can be woken,
+the event loop enqueues it in the scheduler</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="defined-in" class="anchor" href="#defined-in">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Defined in:
+  </h2>
+  
+    
+      <a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/fe08b678c9e99c5ef618cbf380ddb3fa349f5459/src/fiber_stats/call_track.cr#L1" target="_blank">
+        fiber_stats/call_track.cr
+      </a>
+    
+    <br/>
+  
+    
+      <a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/fe08b678c9e99c5ef618cbf380ddb3fa349f5459/src/fiber_stats/fiber.cr#L1" target="_blank">
+        fiber_stats/fiber.cr
+      </a>
+    
+    <br/>
+  
+
+
+
+
+
+
+
+  <h2>
+    <a id="class-method-summary" class="anchor" href="#class-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Class Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#print_stats(io=STDOUT):Nil-class-method" class="signature"><strong>.print_stats</strong>(io = <span class="t">STDOUT</span>) : Nil</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#stats-class-method" class="signature"><strong>.stats</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#stats_debug=(val)-class-method" class="signature"><strong>.stats_debug=</strong>(val)</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+
+
+  <h2>
+    <a id="macro-summary" class="anchor" href="#macro-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Macro Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#measure(name=nil)-macro" class="signature"><strong>measure</strong>(name = <span class="n">nil</span>)</a>
+        
+          <div class="summary"><p><span class="flag lime">EXPERIMENTAL</span>  </p>
+
+</div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#measure_blocking(name=nil)-macro" class="signature"><strong>measure_blocking</strong>(name = <span class="n">nil</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#measure_idle(name=nil)-macro" class="signature"><strong>measure_idle</strong>(name = <span class="n">nil</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#measure_method(sym)-macro" class="signature"><strong>measure_method</strong>(sym)</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+<div class="methods-inherited">
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+</div>
+
+
+
+
+  <h2>
+    <a id="class-method-detail" class="anchor" href="#class-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Class Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="print_stats(io=STDOUT):Nil-class-method">
+      <div class="signature">
+        
+        def self.<strong>print_stats</strong>(io = <span class="t">STDOUT</span>) : Nil
+
+        <a class="method-permalink" href="#print_stats(io=STDOUT):Nil-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/fe08b678c9e99c5ef618cbf380ddb3fa349f5459/src/fiber_stats/fiber.cr#L160" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="stats-class-method">
+      <div class="signature">
+        
+        def self.<strong>stats</strong>
+
+        <a class="method-permalink" href="#stats-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/fe08b678c9e99c5ef618cbf380ddb3fa349f5459/src/fiber_stats/fiber.cr#L144" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="stats_debug=(val)-class-method">
+      <div class="signature">
+        
+        def self.<strong>stats_debug=</strong>(val)
+
+        <a class="method-permalink" href="#stats_debug=(val)-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/fe08b678c9e99c5ef618cbf380ddb3fa349f5459/src/fiber_stats/fiber.cr#L51" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+
+
+  <h2>
+    <a id="macro-detail" class="anchor" href="#macro-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Macro Detail
+  </h2>
+  
+    <div class="entry-detail" id="measure(name=nil)-macro">
+      <div class="signature">
+        
+        macro <strong>measure</strong>(name = <span class="n">nil</span>)
+
+        <a class="method-permalink" href="#measure(name=nil)-macro">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p><span class="flag lime">EXPERIMENTAL</span>  </p>
+
+
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/fe08b678c9e99c5ef618cbf380ddb3fa349f5459/src/fiber_stats/fiber.cr#L29" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="measure_blocking(name=nil)-macro">
+      <div class="signature">
+        
+        macro <strong>measure_blocking</strong>(name = <span class="n">nil</span>)
+
+        <a class="method-permalink" href="#measure_blocking(name=nil)-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/fe08b678c9e99c5ef618cbf380ddb3fa349f5459/src/fiber_stats/fiber.cr#L41" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="measure_idle(name=nil)-macro">
+      <div class="signature">
+        
+        macro <strong>measure_idle</strong>(name = <span class="n">nil</span>)
+
+        <a class="method-permalink" href="#measure_idle(name=nil)-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/fe08b678c9e99c5ef618cbf380ddb3fa349f5459/src/fiber_stats/fiber.cr#L35" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="measure_method(sym)-macro">
+      <div class="signature">
+        
+        macro <strong>measure_method</strong>(sym)
+
+        <a class="method-permalink" href="#measure_method(sym)-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/fe08b678c9e99c5ef618cbf380ddb3fa349f5459/src/fiber_stats/fiber.cr#L47" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+</div>
+
+</body>
+</html>
