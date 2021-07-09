@@ -1,6 +1,10 @@
-# `Fiber` metrics (experimental)
+# Fiber metrics (Experimental)
+[![Crystal CI](https://github.com/didactic-drunk/fiber_stats.cr/actions/workflows/crystal.yml/badge.svg)](https://github.com/didactic-drunk/fiber_stats.cr/actions/workflows/crystal.yml)
+[![GitHub release](https://img.shields.io/github/release/didactic-drunk/fiber_stats.cr.svg)](https://github.com/didactic-drunk/fiber_stats.cr/releases)
+![GitHub commits since latest release (by date) for a branch](https://img.shields.io/github/commits-since/didactic-drunk/fiber_stats.cr/latest)
+[![Docs](https://img.shields.io/badge/docs-available-brightgreen.svg)](https://didactic-drunk.github.io/fiber_stats.cr/main)
 
-Track run time, wait time, memory allocations per `Fiber`, method or block.
+Track run time, wait time or memory allocations per `Fiber`, method or block.
 
 Designed for low overhead use in production.
 
@@ -50,7 +54,7 @@ e.run
 Fiber.print_stats
 ```
 
-Output:
+## Output
 ```
 Example.run,running tt:   0.216 rt:   0.002 idle:   0.214                   calls:      1    mem: 0k
 Example.run,sleep   tt:   0.214             idle:   0.214                   calls:      1              
