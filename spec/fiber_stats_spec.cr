@@ -3,6 +3,9 @@ require "./spec_helper"
 STDOUT.sync = true
 
 class C
+  include Fiber::Metrics
+
+  @[Measure]
   def run
     Fiber.measure(:run) do
       sleep 0.01
@@ -13,24 +16,27 @@ class C
     end
   end
 
+  @[Measure]
   def recur(n, &block)
     if n == 0
-      return yield
+      Fiber.measure :yield do
+        return yield
+      end
     end
 
-    Fiber.measure do
-      1.times do
-        ary = Array(Int32).new 1024
-      end
+    1.times do
+      ary = Array(Int32).new 1024
+    end
+    sleep 0.1
+    Fiber.measure_idle :sleep do
       sleep 0.1
-      Fiber.measure_idle :sleep do
-        sleep 0.1
-        recur (n - 1), &block
-        sleep 0.1
-      end
+      recur (n - 1), &block
       sleep 0.1
     end
+    sleep 0.1
   end
+
+  recur 1
 end
 
 
@@ -76,16 +82,20 @@ describe Fiber do
     stats.size.should eq 2
 
     time_delta = 0.9
-    stats.each_with_index do |(_, c), i|
-      c.calls.should eq (fibers * depth)
+    stats.each do |name, c|
+      case name
+        when "C.recur"
+          c.calls.should eq (fibers * depth)
 
-      if i == 1
-        # Only check the minimum.  Arrays & Fibers allocate memory too
-        (c.mem//1024).should be > ((4096 * fibers * depth) // 1024)
-        c.tt.to_f.should be_close(elapsed, time_delta)
-        c.rt.to_f.should be_close(elapsed/2, time_delta)
-        c.idle.to_f.should be_close(elapsed/2, time_delta)
-        c.blocking.to_f.should be_close(0, time_delta)
+          # Only check the minimum.  Arrays & Fibers allocate memory too
+          (c.mem//1024).should be > ((4096 * fibers * depth) // 1024)
+          c.tt.to_f.should be_close(elapsed, time_delta)
+          c.rt.to_f.should be_close(elapsed/2, time_delta)
+          c.idle.to_f.should be_close(elapsed/2, time_delta)
+          c.blocking.to_f.should be_close(0, time_delta)
+        else
+p name
+#          raise "unknown name #{name}"
       end
     end
 
