@@ -18,10 +18,8 @@ class Fiber
     property calls = 0_u64
     @start_time = uninitialized Time::Span
     property t_type = TrackingType::Measure
-    # BUG: temp debugging
-    @mi = 0
 
-    def measure(meth_name, name, @t_type, prev : self, @mi)
+    def measure(@t_type, prev : self? = nil)
       init
       yield
     ensure
@@ -50,7 +48,7 @@ class Fiber
       @idle = _idle
       @blocking = _blocking
 
-      prev.add_from self
+      prev.try &.add_from(self)
 #      @t_type = TrackingType::Unused
 
 #      puts "#{meth_name} #{name} #{elapsed}"

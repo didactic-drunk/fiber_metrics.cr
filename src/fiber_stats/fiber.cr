@@ -53,6 +53,23 @@ class Fiber
   end
 
   # :nodoc:
+  def maybe_measure(t_type : Fiber::TrackingType)
+    return yield unless @measure_data
+    stack, msummary = measure_data
+    mi = @measuring_idx
+    cm = stack[mi]
+
+    old_t_type = cm.t_type
+    begin
+      cm.measure(t_type, prev: nil) do
+        yield
+      end
+    ensure
+      cm.t_type = old_t_type
+    end
+  end
+
+  # :nodoc:
   def measure_internal(meth_name : String, name : Symbol | String | Nil, t_type)
     stack, msummary = measure_data
     mi = @measuring_idx += 1
@@ -66,7 +83,7 @@ class Fiber
     prev = stack[mi - 1]
 
     begin
-      cm.measure(meth_name, name, t_type, prev, mi) do
+      cm.measure(t_type, prev) do
         yield
       end
     ensure

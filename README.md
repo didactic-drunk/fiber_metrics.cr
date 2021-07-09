@@ -1,6 +1,16 @@
-# fiber_stats
+# `Fiber` metrics (experimental)
 
-WIP: Currently debugging
+Track run time, wait time, memory allocations per `Fiber`, method or block.
+
+Designed for low overhead use in production.
+
+## TODO
+- [x] `Channel.send,recv`
+- [ ] `sleep`
+- [ ] `Mutex`
+- [ ] `IO`
+- [ ] Hook in to `Scheduler`
+
 
 ## Installation
 
@@ -20,32 +30,32 @@ WIP: Currently debugging
 require "fiber_stats"
 
 class Example
+  include Fiber::Stats
+
   def run
     Fiber.measure :running do
       # ...
 
-      Fiber.idle :sleep do
+      Fiber.measure_idle :sleep do
         sleep 0.2
       end
     end
   end
 
-  C.new.run
-  Fiber.print_stats
 end
+
+e = Example.new
+e.run
+
+Fiber.print_stats
 ```
 
 Output:
 ```
-Example.run,running tt:   0.216 rt:   0.002 idle:   0.214                   calls:      1
+Example.run,running tt:   0.216 rt:   0.002 idle:   0.214                   calls:      1    mem: 0k
 Example.run,sleep   tt:   0.214             idle:   0.214                   calls:      1              
 ```
 
-TODO: Write usage instructions here
-
-## Development
-
-TODO: Write development instructions here
 
 ## Contributing
 
