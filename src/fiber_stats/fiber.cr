@@ -70,7 +70,7 @@ class Fiber
   end
 
   # :nodoc:
-  def measure_internal(meth_name : String, name : Symbol | String | Nil, t_type)
+  def measure_internal(meth_name : String, name : Symbol | String | Nil, t_type : TrackingType)
     stack, msummary = measure_data
     mi = @measuring_idx += 1
     if @@stats_debug

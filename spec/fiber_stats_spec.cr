@@ -35,8 +35,6 @@ class C
     end
     sleep 0.1
   end
-
-  recur 1
 end
 
 

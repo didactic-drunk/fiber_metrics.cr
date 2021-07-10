@@ -14,14 +14,15 @@ module Fiber::Metrics
     include InstanceMethods
 
     macro finished
-      {% for meth in @type.methods.select &.annotation(Measure) %}
-        def self.{{meth.name}}({{meth.args}})
+      \{% for meth in @type.methods.select &.annotation(Measure) %}
+        def \{{meth.name}}(\{{meth.args.splat}})
 {{debug}}
-          Fiber.measure do
+STDERR.puts "running"
+          Fiber.current.measure_internal "foo", nil, :measure do
             previous_def
           end
         end
-      {% end %}
+      \{% end %}
     end
   end
 end
