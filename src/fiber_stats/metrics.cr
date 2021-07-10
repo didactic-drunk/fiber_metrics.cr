@@ -15,11 +15,9 @@ module Fiber::Metrics
 
     macro finished
       \{% for meth in @type.methods.select &.annotation(Measure) %}
-        def \{{meth.name}}(\{{meth.args.splat}})
-\{{debug}}
-STDERR.puts "running"
-          Fiber.current.measure_internal "foo", nil, :measure do
-            previous_def
+        def \{{meth.name}}(\{{meth.args.splat}}\{{meth.block_arg ? ", &#{meth.block_arg}".id : nil}}) \{{meth.return_type ? ": #{meth.return_type}".id : "".id}}
+          Fiber.current.measure_internal \{{"#{@type.name.id}.#{meth.name}"}}, nil, :measure do
+            previous_def \{{meth.block_arg ? " &#{meth.block_arg}".id : "".id}}
           end
         end
       \{% end %}

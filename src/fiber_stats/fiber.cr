@@ -147,7 +147,8 @@ class Fiber
       @@msummary.each do |mkey, nsum|
           nsum.each do |nkey, calls|
             # FEATURE: string cache
-            hash["#{mkey},#{nkey}"] = calls
+            k = nkey ? "#{mkey},#{nkey}" : mkey
+            hash[k] = calls
           end
       end
     end
