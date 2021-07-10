@@ -16,7 +16,7 @@ module Fiber::Metrics
     macro finished
       \{% for meth in @type.methods.select &.annotation(Measure) %}
         def \{{meth.name}}(\{{meth.args.splat}})
-{{debug}}
+\{{debug}}
 STDERR.puts "running"
           Fiber.current.measure_internal "foo", nil, :measure do
             previous_def

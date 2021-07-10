@@ -5,7 +5,7 @@ STDOUT.sync = true
 class C
   include Fiber::Metrics
 
-  @[Measure]
+#  @[Measure]
   def run
     Fiber.measure(:run) do
       sleep 0.01
