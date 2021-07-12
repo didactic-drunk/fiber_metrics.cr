@@ -34,18 +34,12 @@ Designed for low overhead use in production.
 require "fiber_stats"
 
 class Example
-  include Fiber::Stats
+  include Fiber::Metrics
 
+  @[Measure]
   def run
-    Fiber.measure :running do
-      # ...
-
-      Fiber.measure_idle :sleep do
-        sleep 0.2
-      end
-    end
+    sleep 0.2
   end
-
 end
 
 e = Example.new
@@ -56,8 +50,7 @@ Fiber.print_stats
 
 ## Output
 ```
-Example.run,running tt:   0.216 rt:   0.002 idle:   0.214                   calls:      1    mem: 0k
-Example.run,sleep   tt:   0.214             idle:   0.214                   calls:      1              
+Example.run tt:   0.203 rt:   0.200                           calls:      1    mem: 0k
 ```
 
 

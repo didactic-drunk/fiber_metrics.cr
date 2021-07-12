@@ -16,9 +16,7 @@ class Fiber
     end
 
     msummary = MethodSummaryT.new do |h, k|
-      h[k] = NameSummaryT.new do |h2, k2|
-        h2[k2] = CallTrack.new.tap { |cm| cm.t_type = TrackingType::Sum }
-      end
+      h[k] = NameSummaryT.new
     end
 
     {stack, msummary}
@@ -32,45 +30,45 @@ class Fiber
     end
   end
 
+  @[Experimental]
   macro measure_idle(name = nil)
     Fiber.current.measure_internal \{{"#{@type.name.id}.#{@def.name.id}"}}, {{name}}, Fiber::TrackingType::Idle do
       {{ yield }}
     end
   end
 
+  @[Experimental]
   macro measure_blocking(name = nil)
     Fiber.current.measure_internal \{{"#{@type.name.id}.#{@def.name.id}"}}, {{name}}, Fiber::TrackingType::Blocking do
       {{ yield }}
     end
   end
 
-  macro measure_method(sym)
-  end
-
   @@stats_debug = false
+  # :nodoc:
   def self.stats_debug=(val)
     @@stats_debug = val
   end
 
-  # :nodoc:
-  def maybe_measure(t_type : Fiber::TrackingType)
-    return yield unless @measure_data
-    stack, msummary = measure_data
-    mi = @measuring_idx
-    cm = stack[mi]
+  @cur_call_track = CallTrack.new
 
-    old_t_type = cm.t_type
-    begin
-      cm.measure(t_type, prev: nil) do
-        yield
+  {% for field in %w(measure idle blocking) %}
+    # :nodoc:
+    # Only measure if already measuring this Fiber
+    def maybe_measure_{{field.id}}
+      return yield unless @measuring_idx > 0
+
+      measure_start = Time.monotonic
+      begin
+          yield
+      ensure
+        @cur_call_track.{{field.id}} += Time.monotonic - measure_start
       end
-    ensure
-      cm.t_type = old_t_type
     end
-  end
+  {% end %}
 
   # :nodoc:
-  def measure_internal(meth_name : String, name : Symbol | String | Nil, t_type)
+  def measure_internal(meth_name : String, name : String?, t_type : TrackingType)
     stack, msummary = measure_data
     mi = @measuring_idx += 1
     if @@stats_debug
@@ -80,60 +78,51 @@ class Fiber
     cm = stack[mi]
     # Keep one additional CallTrack on end to alloc malloc tracking of CallTrack.new
     stack << CallTrack.new unless stack.size > mi + 1
-    prev = stack[mi - 1]
 
+    # save prev on stack
+    stack[mi - 1] = @cur_call_track
+    @cur_call_track = CallTrack.new
+  @cur_call_track.info meth_name, name
+
+    start_measure = Time.monotonic
     begin
-      cm.measure(t_type, prev) do
         yield
-      end
     ensure
+      elapsed = Time.monotonic - start_measure
+
+      @cur_call_track.add_rt elapsed
       @measuring_idx -= 1
-      methsum = msummary[meth_name][name]
-      methsum.add_from cm
+      methsum = msummary[meth_name][name] ||= CallTrack.new.info(meth_name, name)
       methsum.calls += 1
+      msummary[meth_name][name] = methsum.add_from @cur_call_track
 
       if mi == 1 # spawn exit is unpredictable.  store stats here
         aggregate_stats
       end
 
-    if @@stats_debug
-      self.to_s(STDOUT)
-      STDOUT << " exit mi=" << @measuring_idx << "\n"
-    end
+      @cur_call_track = stack[mi - 1].add_child @cur_call_track
     end
   end
-
-  @in_tracking_func = false
 
   # :nodoc:
   # Can't allocate memory in this method
   def track_malloc(size) : Nil
-    return if @in_tracking_func
+    return if @measuring_idx == 0
 
-    mi = @measuring_idx
-    @in_tracking_func = true
-    begin
-      if stack_msummary = @measure_data
-        stack = stack_msummary[0]
-        calls = stack[mi]
-        calls.track_malloc size, mi, @@stats_debug
-      end
-    ensure
-      @in_tracking_func = false
-    end
+    @cur_call_track.mem += size
   end
 
   # :nodoc:
   protected def aggregate_stats
     if stack_msummary = @measure_data
-      msum = stack_msummary[1]
+      msum = stack_msummary.last
       MSUMMARY_MUTEX.synchronize do
         msum.each do |mkey, nsum|
           nsummary = @@msummary[mkey]
           nsum.each do |nkey, calls|
-            nsummary[nkey].add_from calls
-            calls.reset
+            nsummary[nkey] = nsummary[nkey].add_from calls
           end
+          nsum.clear
         end
       end
     end
@@ -146,8 +135,9 @@ class Fiber
     MSUMMARY_MUTEX.synchronize do
       @@msummary.each do |mkey, nsum|
           nsum.each do |nkey, calls|
-            # FEATURE: string cache
-            hash["#{mkey},#{nkey}"] = calls
+            # FEATURE: String cache
+            k = nkey ? "#{mkey},#{nkey}" : mkey
+            hash[k] = calls
           end
       end
     end
@@ -158,6 +148,8 @@ class Fiber
   private IFMT = "%8d"
 
   def self.print_stats(io = STDOUT) : Nil
+    puts "Stats:"
+
     key_size_max = 0
     stats.to_a.sort_by { |key, nsum|
       key_size_max = Math.max(key.bytesize, key_size_max)
@@ -177,7 +169,7 @@ class Fiber
     end
   end
 
-  private def self.print_val(io : IO, prefix : String, suffix : String?, fmt : String, maxlen, val)
+  private def self.print_val(io : IO, prefix : String, suffix : String?, fmt : String, maxlen, val) : Nil
     val = case val
       when Time::Span
         val.to_f
