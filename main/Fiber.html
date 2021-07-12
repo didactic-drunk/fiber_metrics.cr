@@ -66,6 +66,31 @@
       
     </li>
   
+  <li class="parent " data-id="fiber_stats/Fiber/Metrics" data-name="fiber::metrics">
+      <a href="Fiber/Metrics.html">Metrics</a>
+      
+        <ul>
+  
+  <li class=" " data-id="fiber_stats/Fiber/Metrics/ClassMethods" data-name="fiber::metrics::classmethods">
+      <a href="Fiber/Metrics/ClassMethods.html">ClassMethods</a>
+      
+    </li>
+  
+  <li class=" " data-id="fiber_stats/Fiber/Metrics/InstanceMethods" data-name="fiber::metrics::instancemethods">
+      <a href="Fiber/Metrics/InstanceMethods.html">InstanceMethods</a>
+      
+    </li>
+  
+  <li class=" " data-id="fiber_stats/Fiber/Metrics/Measure" data-name="fiber::metrics::measure">
+      <a href="Fiber/Metrics/Measure.html">Measure</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
   <li class=" " data-id="fiber_stats/Fiber/NameSummaryT" data-name="fiber::namesummaryt">
       <a href="Fiber/NameSummaryT.html">NameSummaryT</a>
       
@@ -190,14 +215,14 @@ the event loop enqueues it in the scheduler</p>
   </h2>
   
     
-      <a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/e21ebbc5e1c0abb9dd7fdab7b3369b06b2a6440c/src/fiber_stats/call_track.cr#L1" target="_blank">
+      <a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/2276183374e07b18a03b4a9f979ab3b5e04c5bfe/src/fiber_stats/call_track.cr#L1" target="_blank">
         fiber_stats/call_track.cr
       </a>
     
     <br/>
   
     
-      <a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/e21ebbc5e1c0abb9dd7fdab7b3369b06b2a6440c/src/fiber_stats/fiber.cr#L1" target="_blank">
+      <a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/2276183374e07b18a03b4a9f979ab3b5e04c5bfe/src/fiber_stats/fiber.cr#L1" target="_blank">
         fiber_stats/fiber.cr
       </a>
     
@@ -230,11 +255,6 @@ the event loop enqueues it in the scheduler</p>
         
       </li>
     
-      <li class="entry-summary">
-        <a href="#stats_debug=(val)-class-method" class="signature"><strong>.stats_debug=</strong>(val)</a>
-        
-      </li>
-    
   </ul>
 
 
@@ -263,15 +283,18 @@ the event loop enqueues it in the scheduler</p>
       <li class="entry-summary">
         <a href="#measure_blocking(name=nil)-macro" class="signature"><strong>measure_blocking</strong>(name = <span class="n">nil</span>)</a>
         
+          <div class="summary"><p><span class="flag lime">EXPERIMENTAL</span>  </p>
+
+</div>
+        
       </li>
     
       <li class="entry-summary">
         <a href="#measure_idle(name=nil)-macro" class="signature"><strong>measure_idle</strong>(name = <span class="n">nil</span>)</a>
         
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#measure_method(sym)-macro" class="signature"><strong>measure_method</strong>(sym)</a>
+          <div class="summary"><p><span class="flag lime">EXPERIMENTAL</span>  </p>
+
+</div>
         
       </li>
     
@@ -326,7 +349,7 @@ the event loop enqueues it in the scheduler</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/e21ebbc5e1c0abb9dd7fdab7b3369b06b2a6440c/src/fiber_stats/fiber.cr#L160" target="_blank">View source</a>]
+          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/2276183374e07b18a03b4a9f979ab3b5e04c5bfe/src/fiber_stats/fiber.cr#L150" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -342,23 +365,7 @@ the event loop enqueues it in the scheduler</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/e21ebbc5e1c0abb9dd7fdab7b3369b06b2a6440c/src/fiber_stats/fiber.cr#L144" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="stats_debug=(val)-class-method">
-      <div class="signature">
-        
-        def self.<strong>stats_debug=</strong>(val)
-
-        <a class="method-permalink" href="#stats_debug=(val)-class-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/e21ebbc5e1c0abb9dd7fdab7b3369b06b2a6440c/src/fiber_stats/fiber.cr#L51" target="_blank">View source</a>]
+          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/2276183374e07b18a03b4a9f979ab3b5e04c5bfe/src/fiber_stats/fiber.cr#L133" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -395,7 +402,7 @@ the event loop enqueues it in the scheduler</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/e21ebbc5e1c0abb9dd7fdab7b3369b06b2a6440c/src/fiber_stats/fiber.cr#L29" target="_blank">View source</a>]
+          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/2276183374e07b18a03b4a9f979ab3b5e04c5bfe/src/fiber_stats/fiber.cr#L27" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -408,10 +415,17 @@ the event loop enqueues it in the scheduler</p>
         <a class="method-permalink" href="#measure_blocking(name=nil)-macro">#</a>
       </div>
       
+        <div class="doc">
+          
+          <p><span class="flag lime">EXPERIMENTAL</span>  </p>
+
+
+        </div>
+      
       <br/>
       <div>
         
-          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/e21ebbc5e1c0abb9dd7fdab7b3369b06b2a6440c/src/fiber_stats/fiber.cr#L41" target="_blank">View source</a>]
+          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/2276183374e07b18a03b4a9f979ab3b5e04c5bfe/src/fiber_stats/fiber.cr#L41" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -424,26 +438,17 @@ the event loop enqueues it in the scheduler</p>
         <a class="method-permalink" href="#measure_idle(name=nil)-macro">#</a>
       </div>
       
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/e21ebbc5e1c0abb9dd7fdab7b3369b06b2a6440c/src/fiber_stats/fiber.cr#L35" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="measure_method(sym)-macro">
-      <div class="signature">
-        
-        macro <strong>measure_method</strong>(sym)
+        <div class="doc">
+          
+          <p><span class="flag lime">EXPERIMENTAL</span>  </p>
 
-        <a class="method-permalink" href="#measure_method(sym)-macro">#</a>
-      </div>
+
+        </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/e21ebbc5e1c0abb9dd7fdab7b3369b06b2a6440c/src/fiber_stats/fiber.cr#L47" target="_blank">View source</a>]
+          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/2276183374e07b18a03b4a9f979ab3b5e04c5bfe/src/fiber_stats/fiber.cr#L34" target="_blank">View source</a>]
         
       </div>
     </div>
