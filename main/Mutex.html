@@ -13,7 +13,7 @@
 <script type="text/javascript" src="js/doc.js"></script>
 
   <meta name="repository-name" content="fiber_stats">
-  <title>GC - fiber_stats main</title>
+  <title>Mutex - fiber_stats main</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "";
   </script>
@@ -106,7 +106,7 @@
       
     </li>
   
-  <li class="parent open current" data-id="fiber_stats/GC" data-name="gc">
+  <li class="parent " data-id="fiber_stats/GC" data-name="gc">
       <a href="GC.html">GC</a>
       
         <ul>
@@ -121,7 +121,7 @@
       
     </li>
   
-  <li class=" " data-id="fiber_stats/Mutex" data-name="mutex">
+  <li class=" current" data-id="fiber_stats/Mutex" data-name="mutex">
       <a href="Mutex.html">Mutex</a>
       
     </li>
@@ -135,13 +135,40 @@
 <div class="main-content">
 <h1 class="type-name">
 
-  <span class="kind">module</span> GC
+  <span class="kind">class</span> Mutex
 
 </h1>
 
 
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="Mutex.html">Mutex</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
 
 
+
+
+  <h2>
+    <a id="overview" class="anchor" href="#overview">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Overview
+  </h2>
+
+  <p>A fiber-safe mutex.</p>
+
+<p>Provides deadlock protection by default. Attempting to re-lock the mutex from
+the same fiber will raise an exception. Trying to unlock an unlocked mutex, or
+a mutex locked by another fiber will raise an exception.</p>
+
+<p>The reentrant protection maintains a lock count. Attempting to re-lock the
+mutex from the same fiber will increment the lock count. Attempting to unlock
+the counter from the same fiber will decrement the lock count, eventually
+releasing the lock when the lock count returns to 0. Attempting to unlock an
+unlocked mutex, or a mutex locked by another fiber will raise an exception.</p>
+
+<p>You also disable all protections with <code>unchecked</code>. Attempting to re-lock the
+mutex from the same fiber will deadlock. Any fiber can unlock the mutex, even
+if it wasn't previously locked.</p>
 
 
 
@@ -166,8 +193,8 @@
   </h2>
   
     
-      <a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/31d2e1fa5bc08b3b5e2ff123805a11e713fa29f0/src/fiber_stats/gc.cr#L1" target="_blank">
-        fiber_stats/gc.cr
+      <a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/31d2e1fa5bc08b3b5e2ff123805a11e713fa29f0/src/fiber_stats/mutex.cr#L3" target="_blank">
+        fiber_stats/mutex.cr
       </a>
     
     <br/>
@@ -179,18 +206,20 @@
 
 
 
+
+
   <h2>
-    <a id="class-method-summary" class="anchor" href="#class-method-summary">
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
 </a>
-    Class Method Summary
+    Instance Method Summary
   </h2>
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#enable_memory_tracking-class-method" class="signature"><strong>.enable_memory_tracking</strong></a>
+        <a href="#lock:Nil-instance-method" class="signature"><strong>#lock</strong> : Nil</a>
         
       </li>
     
@@ -200,42 +229,60 @@
 
 
 
-
-
 <div class="methods-inherited">
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
   
 </div>
 
 
 
 
+
+
   <h2>
-    <a id="class-method-detail" class="anchor" href="#class-method-detail">
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
 </a>
-    Class Method Detail
+    Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="enable_memory_tracking-class-method">
+    <div class="entry-detail" id="lock:Nil-instance-method">
       <div class="signature">
         
-        def self.<strong>enable_memory_tracking</strong>
+        def <strong>lock</strong> : Nil
 
-        <a class="method-permalink" href="#enable_memory_tracking-class-method">#</a>
+        <a class="method-permalink" href="#lock:Nil-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/31d2e1fa5bc08b3b5e2ff123805a11e713fa29f0/src/fiber_stats/gc.cr#L11" target="_blank">View source</a>]
+          [<a href="https://github.com/didactic-drunk/fiber_stats.cr/blob/31d2e1fa5bc08b3b5e2ff123805a11e713fa29f0/src/fiber_stats/mutex.cr#L4" target="_blank">View source</a>]
         
       </div>
     </div>
   
-
-
 
 
 
