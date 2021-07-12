@@ -9,68 +9,43 @@ class Fiber
   end
 
   # :nodoc:
-  class CallTrack
+  struct CallTrack
     property mem = 0_u64
     property tt = Time::Span.new
     property rt = Time::Span.new
+    # Time spent in other methods
+    property ot = Time::Span.new
     property idle = Time::Span.new
     property blocking = Time::Span.new
     property calls = 0_u64
     @start_time = uninitialized Time::Span
     property t_type = TrackingType::Measure
+    property meth_name : String = "UNSPECIFIED_METHOD"
+    property name : String | Symbol | Nil = nil
 
-    def measure(@t_type, prev : self? = nil)
-      init
-      yield
-    ensure
-      elapsed = Time.monotonic - @start_time
-
-      _tt = tt + elapsed
-      _idle = idle
-      _blocking = blocking
-      _rt = rt
-
-      elapsed -= _rt + _idle + _blocking
-
-      case @t_type
-        in TrackingType::Measure
-          _rt += elapsed
-        in TrackingType::Idle
-          _idle += elapsed
-        in TrackingType::Blocking
-          _blocking += elapsed
-        in TrackingType::Unused, TrackingType::Sum
-          abort "impossible condition #{self}"
-      end
-
-      @tt = _tt
-      @rt = _rt
-      @idle = _idle
-      @blocking = _blocking
-
-      prev.try &.add_from(self)
-#      @t_type = TrackingType::Unused
-
-#      puts "#{meth_name} #{name} #{elapsed}"
+    def info(@meth_name, @name) : self
+      self
     end
 
-    def track_malloc(size, mi, debug)
-      @mem += size
-#      STDOUT << @t_type.to_s << " mi=" << mi << " size=" << size << "\n" if debug
+    def add_rt(elapsed) : Nil
+      @tt += elapsed
+      @rt += elapsed - @idle - blocking
     end
 
-    def track_realloc(ptr, size)
-      # BUG: sub old allocate size
-      @mem += size
+    def add_child(other : self) : self
+      @ot += other.rt + other.idle + other.blocking
+      @rt -= other.rt + other.ot + other.idle + other.blocking
+      self
     end
 
-    def add_from(other : self)
+    def add_from(other : self) : self
       @mem += other.mem
-      @tt += other.tt if @t_type == TrackingType::Sum
+      @tt += other.tt
       @rt += other.rt
       @idle += other.idle
       @blocking += other.blocking
       @calls += other.calls
+      self
     end
 
     private def init
@@ -82,8 +57,9 @@ class Fiber
       @mem = 0_u64
       @tt = Time::Span.new
       @rt = Time::Span.new
+      @ot = Time::Span.new
       @idle = Time::Span.new
-      @blocked = Time::Span.new
+      @blocking = Time::Span.new
       @calls = 0_u64
     end
   end
