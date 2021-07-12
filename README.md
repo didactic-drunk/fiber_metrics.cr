@@ -11,7 +11,7 @@ Designed for low overhead use in production.
 ## TODO
 - [x] `Channel.send,recv`
 - [ ] `sleep`
-- [ ] `Mutex`
+- [x] `Mutex`
 - [ ] `IO`
 - [ ] Hook in to `Scheduler`
 
