@@ -7,6 +7,8 @@ SLEEP_TIME = 0.1
 class C
   include Fiber::Metrics
 
+  MUTEX = Mutex.new
+
   @[Measure]
   def run
     Fiber.measure(:run) do
@@ -38,7 +40,9 @@ class C
   def baz(ch)
     sleep SLEEP_TIME
     ch.send nil
-    Bytes.new 16384
+    MUTEX.synchronize do
+      Bytes.new 16384
+    end
   end
 
 
