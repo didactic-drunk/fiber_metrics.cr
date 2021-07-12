@@ -1,8 +1,8 @@
 # Fiber metrics (Experimental)
-[![Crystal CI](https://github.com/didactic-drunk/fiber_stats.cr/actions/workflows/crystal.yml/badge.svg)](https://github.com/didactic-drunk/fiber_stats.cr/actions/workflows/crystal.yml)
-[![GitHub release](https://img.shields.io/github/release/didactic-drunk/fiber_stats.cr.svg)](https://github.com/didactic-drunk/fiber_stats.cr/releases)
-![GitHub commits since latest release (by date) for a branch](https://img.shields.io/github/commits-since/didactic-drunk/fiber_stats.cr/latest)
-[![Docs](https://img.shields.io/badge/docs-available-brightgreen.svg)](https://didactic-drunk.github.io/fiber_stats.cr/main)
+[![Crystal CI](https://github.com/didactic-drunk/fiber_metrics.cr/actions/workflows/crystal.yml/badge.svg)](https://github.com/didactic-drunk/fiber_metrics.cr/actions/workflows/crystal.yml)
+[![GitHub release](https://img.shields.io/github/release/didactic-drunk/fiber_metrics.cr.svg)](https://github.com/didactic-drunk/fiber_metrics.cr/releases)
+![GitHub commits since latest release (by date) for a branch](https://img.shields.io/github/commits-since/didactic-drunk/fiber_metrics.cr/latest)
+[![Docs](https://img.shields.io/badge/docs-available-brightgreen.svg)](https://didactic-drunk.github.io/fiber_metrics.cr/main)
 
 Track run time, wait time or memory allocations per `Fiber`, method or block.
 
@@ -22,8 +22,8 @@ Designed for low overhead use in production.
 
    ```yaml
    dependencies:
-     fiber_stats:
-       github: didactic-drunk/fiber_stats.cr
+     fiber_metrics:
+       github: didactic-drunk/fiber_metrics.cr
    ```
 
 2. Run `shards install`
@@ -31,7 +31,7 @@ Designed for low overhead use in production.
 ## Usage
 
 ```crystal
-require "fiber_stats"
+require "fiber_metrics"
 
 class Example
   include Fiber::Metrics
@@ -56,7 +56,7 @@ Example.run tt:   0.203 rt:   0.200                           calls:      1    m
 
 ## Contributing
 
-1. Fork it (<https://github.com/didactic-drunk/fiber_stats.cr/fork>)
+1. Fork it (<https://github.com/didactic-drunk/fiber_metrics.cr/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

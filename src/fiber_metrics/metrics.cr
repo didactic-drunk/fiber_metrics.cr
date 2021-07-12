@@ -1,3 +1,5 @@
+require "./fiber"
+
 module Fiber::Metrics
   annotation Measure
   end

@@ -1,2 +1,2 @@
 require "spec"
-require "../src/fiber_stats"
+require "../src/fiber_metrics"

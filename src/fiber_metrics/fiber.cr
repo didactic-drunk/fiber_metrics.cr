@@ -130,6 +130,7 @@ class Fiber
 
   private MSUMMARY_MUTEX = Mutex.new
 
+  @[Experimental]
   def self.stats
     hash = Hash(String, CallTrack).new
     MSUMMARY_MUTEX.synchronize do
@@ -147,6 +148,7 @@ class Fiber
   private FFMT = "%8.3f"
   private IFMT = "%8d"
 
+  @[Experimental]
   def self.print_stats(io = STDOUT) : Nil
     puts "Stats:"
 
