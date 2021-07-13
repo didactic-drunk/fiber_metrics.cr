@@ -190,7 +190,7 @@ will be indistinguishable from a closed channel.</p>
   </h2>
   
     
-      <a href="https://github.com/didactic-drunk/fiber_metrics.cr/blob/c864bb124553f76c54cdaefc13e554a385a5fecf/src/fiber_metrics/channel.cr#L3" target="_blank">
+      <a href="https://github.com/didactic-drunk/fiber_metrics.cr/blob/72fa899ce1fb32a5e9ab983f44d7e90e4034baf4/src/fiber_metrics/channel.cr#L3" target="_blank">
         fiber_metrics/channel.cr
       </a>
     
@@ -214,6 +214,20 @@ will be indistinguishable from a closed channel.</p>
     Instance Method Summary
   </h2>
   <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#receive:T?-instance-method" class="signature"><strong>#receive</strong> : T?</a>
+        
+          <div class="summary"><p>Receives a value from the channel.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#receive?:T?-instance-method" class="signature"><strong>#receive?</strong> : T?</a>
+        
+          <div class="summary"><p>Receives a value from the channel.</p></div>
+        
+      </li>
     
       <li class="entry-summary">
         <a href="#send(value:T):self-instance-method" class="signature"><strong>#send</strong>(value : T) : <span class="k">self</span></a>
@@ -266,6 +280,60 @@ will be indistinguishable from a closed channel.</p>
     Instance Method Detail
   </h2>
   
+    <div class="entry-detail" id="receive:T?-instance-method">
+      <div class="signature">
+        
+        def <strong>receive</strong> : T?
+
+        <a class="method-permalink" href="#receive:T?-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Receives a value from the channel.
+If there is a value waiting, then it is returned immediately. Otherwise, this method blocks until a value is sent to the channel.</p>
+
+<p>Raises <code>ClosedError</code> if the channel is closed or closes while waiting for receive.</p>
+
+<pre><code class="language-crystal">channel <span class="o">=</span> <span class="t">Channel</span>(<span class="t">Int32</span>).<span class="k">new</span>
+spawn <span class="k">do</span>
+  channel.send(<span class="n">1</span>)
+<span class="k">end</span>
+channel.receive <span class="c"># =&gt; 1</span></code></pre>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/didactic-drunk/fiber_metrics.cr/blob/72fa899ce1fb32a5e9ab983f44d7e90e4034baf4/src/fiber_metrics/channel.cr#L10" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="receive?:T?-instance-method">
+      <div class="signature">
+        
+        def <strong>receive?</strong> : T?
+
+        <a class="method-permalink" href="#receive?:T?-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Receives a value from the channel.
+If there is a value waiting, it is returned immediately. Otherwise, this method blocks until a value is sent to the channel.</p>
+
+<p>Returns <code>nil</code> if the channel is closed or closes while waiting for receive.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/didactic-drunk/fiber_metrics.cr/blob/72fa899ce1fb32a5e9ab983f44d7e90e4034baf4/src/fiber_metrics/channel.cr#L16" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
     <div class="entry-detail" id="send(value:T):self-instance-method">
       <div class="signature">
         
@@ -278,7 +346,7 @@ will be indistinguishable from a closed channel.</p>
           
           <p>Sends a value to the channel.
 If the channel has spare capacity, then the method returns immediately.
-Otherwise, this method blocks the calling fiber until another fiber calls <code>#receive</code> on the channel.</p>
+Otherwise, this method blocks the calling fiber until another fiber calls <code><a href="Channel.html#receive:T?-instance-method">#receive</a></code> on the channel.</p>
 
 <p>Raises <code>ClosedError</code> if the channel is closed or closes while waiting on a full channel.</p>
         </div>
@@ -286,7 +354,7 @@ Otherwise, this method blocks the calling fiber until another fiber calls <code>
       <br/>
       <div>
         
-          [<a href="https://github.com/didactic-drunk/fiber_metrics.cr/blob/c864bb124553f76c54cdaefc13e554a385a5fecf/src/fiber_metrics/channel.cr#L4" target="_blank">View source</a>]
+          [<a href="https://github.com/didactic-drunk/fiber_metrics.cr/blob/72fa899ce1fb32a5e9ab983f44d7e90e4034baf4/src/fiber_metrics/channel.cr#L4" target="_blank">View source</a>]
         
       </div>
     </div>

@@ -143,13 +143,17 @@
 
 <p>Designed for low overhead use in production.</p>
 
+<p><span class="flag purple">NOTE</span>  This shard is modular.</p>
+
+<ul><li><code>require "fiber_metrics"</code> Requires the minimum necessary to run with the lowest overhead</li><li><code>require "fiber_metrics/all"</code> Batteries included</li><li>* Crystal is monkey patched to record idle/blocking time</li></ul>
+
 <h2><a id="todo" class="anchor" href="#todo">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
 </a>TODO</h2>
 
-<ul><li>[x] <code>Channel.send,recv</code></li><li>[ ] <code>sleep</code></li><li>[x] <code><a href="Mutex.html">Mutex</a></code></li><li>[ ] <code>IO</code></li><li>[ ] Hook in to <code>Scheduler</code></li></ul>
+<ul><li>[x] <code>Channel.send,recv</code></li><li>[ ] <code>sleep</code></li><li>[x] <code><a href="Mutex.html">Mutex</a></code></li><li>[ ] <code>IO</code></li><li>[ ] Hook in to <code>Scheduler</code></li><li>[ ] ENV to control printing</li></ul>
 
 <h2><a id="installation" class="anchor" href="#installation">
   <svg class="octicon-link" aria-hidden="true">
@@ -175,9 +179,10 @@
   </svg>
 </a>Usage</h2>
 
-<pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;fiber_metrics&quot;</span>
+<pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;fiber_metrics/all&quot;</span>
 
 <span class="k">class</span> <span class="t">Example</span>
+  <span class="c"># Must be included in each class with an annotation **including subclasses**</span>
   <span class="k">include</span> <span class="t">Fiber</span><span class="t">::</span><span class="t">Metrics</span>
 
   @[<span class="t">Measure</span>]
@@ -198,6 +203,57 @@ e.run
 </a>Output</h2>
 
 <pre><code class="language-crystal"><span class="t">Example</span>.run tt:   <span class="n">0.203</span> rt:   <span class="n">0.200</span>                           calls:      <span class="n">1</span>    mem: <span class="n">0</span>k</code></pre>
+
+<h2><a id="how-it-works" class="anchor" href="#how-it-works">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>How it works</h2>
+
+<p><code>@[Measure]</code> wraps each method in 2 <code>Time.monotonic</code> calls and records the difference.</p>
+
+<p>The collected metrics use Fiber local storage (no locking) until the first measured call returns
+after which the local metrics are merged with a global set of metrics wrapped in a Mutex.</p>
+
+<p>This means metrics are unavailable via <code>Fiber.stats</code> until the first measured method <code>foo</code> returns.
+This is ideal for</p>
+
+<ul><li>Applications that show/record stats before exit</li><li>Request/response (HTTP, message queue, etc) type servers that want periodic snapshots of activity</li></ul>
+
+<h3><a id="measure-logic" class="anchor" href="#measure-logic">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>@[Measure] Logic</h3>
+
+<pre><code class="language-crystal">@[<span class="t">Measure</span>]
+<span class="k">def</span> <span class="m">foo</span>
+  <span class="c"># Time.monotonic</span>
+  bar
+  <span class="c"># Time.monotonic</span>
+  <span class="c"># Store metrics in fiber local storage</span>
+  <span class="c"># Merge fiber local metrics with global metrics</span>
+  <span class="c"># Reset fiber local metrics</span>
+<span class="k">end</span>
+
+@[<span class="t">Measure</span>]
+<span class="k">def</span> <span class="m">bar</span>
+  <span class="c"># Time.monotonic</span>
+  baz
+  <span class="c"># Time.monotonic</span>
+  <span class="c"># Store metrics in fiber local storage</span>
+<span class="k">end</span>
+
+@[<span class="t">Measure</span>]
+<span class="k">def</span> <span class="m">baz</span>
+  <span class="c"># Time.monotonic</span>
+  ...
+  <span class="c"># Time.monotonic</span>
+  <span class="c"># Store metrics in fiber local storage</span>
+<span class="k">end</span></code></pre>
+
+<p>More options to control the merging process may appear after use cases are discussed.
+Open a discussion if the current behavior doesn't fit your needs.</p>
 
 <h2><a id="contributing" class="anchor" href="#contributing">
   <svg class="octicon-link" aria-hidden="true">
