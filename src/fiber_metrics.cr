@@ -1,2 +1,2 @@
-require "./fiber_metrics/*"
+require "./fiber_metrics/metrics"
 

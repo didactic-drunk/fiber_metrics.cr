@@ -1,3 +1,5 @@
+require "./call_track"
+
 class Fiber
   alias NameSummaryT = Hash(String|Symbol|Nil, CallTrack)
   alias MethodSummaryT = Hash(String, NameSummaryT)
