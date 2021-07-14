@@ -186,13 +186,29 @@
   <span class="k">include</span> <span class="t">Fiber</span><span class="t">::</span><span class="t">Metrics</span>
 
   @[<span class="t">Measure</span>]
-  <span class="k">def</span> <span class="m">run</span>
+  <span class="k">def</span> <span class="m">foo</span>
+    bar
     sleep <span class="n">0.2</span>
+    <span class="t">Bytes</span>.<span class="k">new</span> <span class="n">16384</span>
+  <span class="k">end</span>
+
+  @[<span class="t">Measure</span>]
+  <span class="k">def</span> <span class="m">bar</span>
+    baz
+    sleep <span class="n">0.2</span>
+    <span class="t">Bytes</span>.<span class="k">new</span> <span class="n">32768</span>
+  <span class="k">end</span>
+  @[<span class="t">Measure</span>]
+
+  @[<span class="t">Measure</span>]
+  <span class="k">def</span> <span class="m">baz</span>
+    sleep <span class="n">0.2</span>
+    <span class="t">Bytes</span>.<span class="k">new</span> <span class="n">65536</span>
   <span class="k">end</span>
 <span class="k">end</span>
 
 e <span class="o">=</span> <span class="t">Example</span>.<span class="k">new</span>
-e.run
+e.foo
 
 <span class="t">Fiber</span>.print_stats</code></pre>
 
@@ -202,7 +218,15 @@ e.run
   </svg>
 </a>Output</h2>
 
-<pre><code class="language-crystal"><span class="t">Example</span>.run tt:   <span class="n">0.203</span> rt:   <span class="n">0.200</span>                           calls:      <span class="n">1</span>    mem: <span class="n">0</span>k</code></pre>
+<pre><code class="language-crystal">┌───────┬───────┬───────┬───────┬───────┬───────┬───────┐
+│ <span class="t">Calls</span> │ <span class="t">IdleT</span> │ <span class="t">BlkT</span>  │ <span class="t">RunT</span>  │ <span class="t">Total</span> │ <span class="t">Mem</span>   │ <span class="t">Name</span>  │
+├───────┼───────┼───────┼───────┼───────┼───────┼───────┤
+│    <span class="n">1</span>  │       │       │ <span class="n">0.209</span> │ <span class="n">0.209</span> │   <span class="n">64</span><span class="t">K</span> │ <span class="t">C</span>.baz │
+│    <span class="n">1</span>  │       │       │ <span class="n">0.205</span> │ <span class="n">0.414</span> │   <span class="n">32</span><span class="t">K</span> │ <span class="t">C</span>.bar │
+│    <span class="n">1</span>  │       │       │ <span class="n">0.204</span> │ <span class="n">0.622</span> │   <span class="n">16</span><span class="t">K</span> │ <span class="t">C</span>.foo │
+└───────┴───────┴───────┴───────┴───────┴───────┴───────┘</code></pre>
+
+<p>Output is best viewed with [<code>less -RS</code>, <code>bat</code>]</p>
 
 <h2><a id="how-it-works" class="anchor" href="#how-it-works">
   <svg class="octicon-link" aria-hidden="true">
