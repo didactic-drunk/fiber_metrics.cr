@@ -83,6 +83,8 @@ Fiber.print_stats
 └───────┴───────┴───────┴───────┴───────┴───────┴───────┘
 ```
 
+Output is best viewed with [`less -RS`, `bat`]
+
 ## How it works
 
 `@[Measure]` wraps each method in 2 `Time.monotonic` calls and records the difference.

@@ -1,11 +1,21 @@
 require "tallboy"
 
 class Fiber
+  # TODO: choose thresholds based on compile time measurement counting
   private STATS_COLOR_THRESHOLDS = [
-    {0.9, :red},
-    {0.5, :yellow},
+    {0.90, :red},
+    {0.70, :light_red},
+    {0.50, :yellow},
     {0.05, :default},
-    {0.0, :light_gray},
+    {0.01, :light_gray},
+    {0.00, :dark_gray},
+  ]
+
+  private STATS_COLOR_THRESHOLDS_MEM = [
+    {0.20, :cyan},
+    {0.05, :default},
+    {0.01, :light_gray},
+    {0.00, :dark_gray},
   ]
 
   @[Experimental]
@@ -22,12 +32,12 @@ class Fiber
     mfmt = "%4dK" # mem
 
     #calls_thresholds = thresholds_for data, 4
-    calls_thresholds = [{0.0, :default}]
+    calls_thresholds = [{0.0, :light_gray}]
     id_thresholds = thresholds_for data, 1
     bl_thresholds = thresholds_for data, 2
     rt_thresholds = thresholds_for data, 3
     tt_thresholds = thresholds_for data, 4
-    mem_thresholds = thresholds_for data, 5
+    mem_thresholds = thresholds_for data, 5, STATS_COLOR_THRESHOLDS_MEM
 
     data = data.map do |row|
       [
@@ -60,12 +70,12 @@ class Fiber
     table.render io: STDOUT
   end
 
-  private def self.thresholds_for(data, colno)
+  private def self.thresholds_for(data, colno, color_thresholds = STATS_COLOR_THRESHOLDS)
     column = data.map { |row| row[colno].to_f }
-    min = column.min
+#    min = column.min
     max = column.max
 
-    STATS_COLOR_THRESHOLDS.map do |thres, color|
+    color_thresholds.map do |thres, color|
       {max * thres, color}
     end
   end

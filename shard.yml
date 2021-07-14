@@ -9,5 +9,6 @@ crystal: ">= 0.34"
 dependencies:
   tallboy:
     github: epoch/tallboy
+    branch: master
 
 license: "MIT"
