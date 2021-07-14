@@ -226,6 +226,19 @@ e.foo
 │    <span class="n">1</span>  │       │       │ <span class="n">0.204</span> │ <span class="n">0.622</span> │   <span class="n">16</span><span class="t">K</span> │ <span class="t">C</span>.foo │
 └───────┴───────┴───────┴───────┴───────┴───────┴───────┘</code></pre>
 
+<p>&lt;span>
+&nbsp;
+&nbsp;
+┌───────┬───────┬───────┬───────┬───────┬───────┬───────┐
+│ Calls │ IdleT │ BlkT  │ RunT  │ Total │ Mem   │ Name  │
+├───────┼───────┼───────┼───────┼───────┼───────┼───────┤
+│ &lt;span class='term-fg37'>   4&lt;/span>  │       │ &lt;span class='term-fg31'>0.375&lt;/span> │ &lt;span class='term-fg31'>0.410&lt;/span> │ 0.784 │ &lt;span class='term-fg36'>  64K&lt;/span> │ C.baz │
+│ &lt;span class='term-fg37'>   4&lt;/span>  │       │       │ &lt;span class='term-fg31'>0.415&lt;/span> │ &lt;span class='term-fg31'>1.618&lt;/span> │ &lt;span class='term-fg36'>  16K&lt;/span> │ C.foo │
+│ &lt;span class='term-fg37'>   4&lt;/span>  │       │       │ &lt;span class='term-fg31'>0.419&lt;/span> │ &lt;span class='term-fgi91'>1.203&lt;/span> │ &lt;span class='term-fg36'>  32K&lt;/span> │ C.bar │
+└───────┴───────┴───────┴───────┴───────┴───────┴───────┘&lt;span class='term-fg32'>.&lt;span class='term-fg33'>*&lt;/span>&lt;/span>
+&nbsp;
+&lt;/span></p>
+
 <p>Output is best viewed with [<code>less -RS</code>, <code>bat</code>]</p>
 
 <h2><a id="how-it-works" class="anchor" href="#how-it-works">
