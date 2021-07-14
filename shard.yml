@@ -6,4 +6,8 @@ authors:
 
 crystal: ">= 0.34"
 
+dependencies:
+  tallboy:
+    github: epoch/tallboy
+
 license: "MIT"

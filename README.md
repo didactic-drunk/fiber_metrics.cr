@@ -45,20 +45,42 @@ class Example
   include Fiber::Metrics
 
   @[Measure]
-  def run
+  def foo
+    bar
     sleep 0.2
+    Bytes.new 16384
+  end
+
+  @[Measure]
+  def bar
+    baz
+    sleep 0.2
+    Bytes.new 32768
+  end
+  @[Measure]
+
+  @[Measure]
+  def baz
+    sleep 0.2
+    Bytes.new 65536
   end
 end
 
 e = Example.new
-e.run
+e.foo
 
 Fiber.print_stats
 ```
 
 ## Output
 ```
-Example.run tt:   0.203 rt:   0.200                           calls:      1    mem: 0k
+┌───────┬───────┬───────┬───────┬───────┬───────┬───────┐
+│ Calls │ IdleT │ BlkT  │ RunT  │ Total │ Mem   │ Name  │
+├───────┼───────┼───────┼───────┼───────┼───────┼───────┤
+│    1  │       │       │ 0.209 │ 0.209 │   64K │ C.baz │
+│    1  │       │       │ 0.205 │ 0.414 │   32K │ C.bar │
+│    1  │       │       │ 0.204 │ 0.622 │   16K │ C.foo │
+└───────┴───────┴───────┴───────┴───────┴───────┴───────┘
 ```
 
 ## How it works

@@ -1,1 +1,3 @@
+require "./printer/tallboy"
+
 require "./*"
