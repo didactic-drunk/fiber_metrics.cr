@@ -74,6 +74,7 @@ Fiber.print_stats
 
 ## Output
 ```
+<span class='term-fg37'>foo</span>
 ┌───────┬───────┬───────┬───────┬───────┬───────┬───────┐
 │ Calls │ IdleT │ BlkT  │ RunT  │ Total │ Mem   │ Name  │
 ├───────┼───────┼───────┼───────┼───────┼───────┼───────┤
@@ -87,7 +88,7 @@ Output is best viewed with [`less -RS`, `bat`]
 
 ## How it works
 
-`@[Measure]` wraps each method in 2 `Time.monotonic` calls and records the difference.
+`@[Measure]` wraps each method in (2) `Time.monotonic` calls and records the difference.
 
 The collected metrics use Fiber local storage (no locking) until the first measured call returns
 after which the local metrics are merged with a global set of metrics wrapped in a Mutex.
