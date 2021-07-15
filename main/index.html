@@ -212,22 +212,21 @@ e.foo
 
 <span class="t">Fiber</span>.print_stats</code></pre>
 
-<h2><a id="output" class="anchor" href="#output">
+<h2><a id="example-output" class="anchor" href="#example-output">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
-</a>Output</h2>
+</a>Example Output</h2>
 
-<pre><code class="language-crystal"><span class='term-fg37'>foo</span>
-┌───────┬───────┬───────┬───────┬───────┬───────┬───────┐
-│ Calls │ IdleT │ BlkT  │ RunT  │ Total │ Mem   │ Name  │
+<pre><code class="language-crystal">┌───────┬───────┬───────┬───────┬───────┬───────┬───────┐
+│ <span class="t">Calls</span> │ <span class="t">IdleT</span> │ <span class="t">BlkT</span>  │ <span class="t">RunT</span>  │ <span class="t">Total</span> │ <span class="t">Mem</span>   │ <span class="t">Name</span>  │
 ├───────┼───────┼───────┼───────┼───────┼───────┼───────┤
-│    1  │       │       │ 0.209 │ 0.209 │   64K │ C.baz │
-│    1  │       │       │ 0.205 │ 0.414 │   32K │ C.bar │
-│    1  │       │       │ 0.204 │ 0.622 │   16K │ C.foo │
+│    <span class="n">1</span>  │       │       │ <span class="n">0.209</span> │ <span class="n">0.209</span> │   <span class="n">64</span><span class="t">K</span> │ <span class="t">C</span>.baz │
+│    <span class="n">1</span>  │       │       │ <span class="n">0.205</span> │ <span class="n">0.414</span> │   <span class="n">32</span><span class="t">K</span> │ <span class="t">C</span>.bar │
+│    <span class="n">1</span>  │       │       │ <span class="n">0.204</span> │ <span class="n">0.622</span> │   <span class="n">16</span><span class="t">K</span> │ <span class="t">C</span>.foo │
 └───────┴───────┴───────┴───────┴───────┴───────┴───────┘</code></pre>
 
-<p>Output is best viewed with [<code>less -RS</code>, <code>bat</code>]</p>
+<p>Output is best viewed with [<code>less -RS</code>, <code>bat --wrap=never</code>]</p>
 
 <h2><a id="how-it-works" class="anchor" href="#how-it-works">
   <svg class="octicon-link" aria-hidden="true">
