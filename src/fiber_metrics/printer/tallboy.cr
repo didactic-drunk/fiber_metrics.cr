@@ -18,6 +18,10 @@ class Fiber
     {0.00, :dark_gray},
   ]
 
+  private STATS_THRESHOLD_MIN = 0.001 # .1 %
+
+  # * An empty space means 0.  For memory this means no allocations
+  # * 0K or 0.000 means < half the number specified.  For memory it means less than 0.5K
   @[Experimental]
   def self.print_stats(io = STDOUT) : Nil
     data = stats.map { |k, v|
@@ -33,13 +37,20 @@ class Fiber
 
     #calls_thresholds = thresholds_for data, 4
     calls_thresholds = [{0.0, :light_gray}]
-    id_thresholds = thresholds_for data, 1
-    bl_thresholds = thresholds_for data, 2
-    rt_thresholds = thresholds_for data, 3
-    tt_thresholds = thresholds_for data, 4
-    mem_thresholds = thresholds_for data, 5, STATS_COLOR_THRESHOLDS_MEM
+    id_thres_min, id_thresholds = thresholds_for data, 1
+    bl_thres_min, bl_thresholds = thresholds_for data, 2
+    rt_thres_min, rt_thresholds = thresholds_for data, 3
+    tt_thres_min, tt_thresholds = thresholds_for data, 4
+    mem_thres_min, mem_thresholds = thresholds_for data, 5, STATS_COLOR_THRESHOLDS_MEM
 
-    data = data.map do |row|
+    # Discard data where all values are < .1% of total
+    data = data.select { |row|
+      row[1].as(Float64) > id_thres_min ||
+      row[2].as(Float64) > bl_thres_min ||
+      row[3].as(Float64) > rt_thres_min ||
+      row[4].as(Float64) > tt_thres_min ||
+      row[5].as(Float64) > mem_thres_min
+    }.map { |row|
       [
         colorize(ifmt, row[0], calls_thresholds),
         colorize(ffmt, row[1], id_thresholds),
@@ -49,17 +60,17 @@ class Fiber
         colorize(mfmt, row[5], mem_thresholds),
         row.last,
       ]
-    end
+    }
 
     table = Tallboy.table do
       columns do
-        add "Calls"
-        add "IdleT"
-        add "BlkT"
-        add "RunT"
-        add "Total"
-        add "Mem"
-        add "Name"
+        add "Calls", align: :center
+        add "IdleT", align: :right
+        add "BlkT", align: :right
+        add "RunT", align: :right
+        add "Total", align: :right
+        add "Mem", align: :right
+        add "Name", align: :left
       end
 
       header
@@ -68,6 +79,7 @@ class Fiber
 
 
     table.render io: STDOUT
+    puts ""
   end
 
   private def self.thresholds_for(data, colno, color_thresholds = STATS_COLOR_THRESHOLDS)
@@ -75,24 +87,28 @@ class Fiber
 #    min = column.min
     max = column.max
 
-    color_thresholds.map do |thres, color|
+    thresholds = color_thresholds.map do |thres, color|
       {max * thres, color}
     end
+
+    thres_min = column.sum * STATS_THRESHOLD_MIN
+
+    {thres_min, thresholds}
   end
 
   private def self.colorize(fmt, val, thresholds)
     case val
     when Float, Int
-    val = val.to_f
-    return "" if val == 0.0
+      val = val.to_f
+      return "" if val == 0.0
 
-    str = fmt % val
-    thresholds.each do |th|
-      if val >= th.first
-        return str.colorize(th.last).to_s
+      str = fmt % val
+      thresholds.each do |th|
+        if val >= th.first
+          return str.colorize(th.last).to_s
+        end
       end
-    end
-    str
+      str
     else
       raise "unhandled type #{typeof(val)} #{val}"
     end

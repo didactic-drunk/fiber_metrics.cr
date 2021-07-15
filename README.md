@@ -72,9 +72,8 @@ e.foo
 Fiber.print_stats
 ```
 
-## Output
+## Example Output
 ```
-<span class='term-fg37'>foo</span>
 ┌───────┬───────┬───────┬───────┬───────┬───────┬───────┐
 │ Calls │ IdleT │ BlkT  │ RunT  │ Total │ Mem   │ Name  │
 ├───────┼───────┼───────┼───────┼───────┼───────┼───────┤
@@ -84,7 +83,7 @@ Fiber.print_stats
 └───────┴───────┴───────┴───────┴───────┴───────┴───────┘
 ```
 
-Output is best viewed with [`less -RS`, `bat`]
+Output is best viewed with [`less -RS`, `bat --wrap=never`]
 
 ## How it works
 
