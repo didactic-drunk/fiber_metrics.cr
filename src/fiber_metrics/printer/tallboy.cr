@@ -85,13 +85,13 @@ class Fiber
   private def self.thresholds_for(data, colno, color_thresholds = STATS_COLOR_THRESHOLDS)
     column = data.map { |row| row[colno].to_f }
 #    min = column.min
-    max = column.max
+    max = column.max? || 0.0
 
     thresholds = color_thresholds.map do |thres, color|
       {max * thres, color}
     end
 
-    thres_min = column.sum * STATS_THRESHOLD_MIN
+    thres_min = column.sum(0.0) * STATS_THRESHOLD_MIN
 
     {thres_min, thresholds}
   end
