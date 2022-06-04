@@ -70,6 +70,13 @@ class Fiber
   {% end %}
 
   # :nodoc:
+  def measure_internal(meth_name : String, name : Symbol, t_type : TrackingType)
+    measure_internal meth_name, name.to_s, t_type do
+      yield
+    end
+  end
+
+  # :nodoc:
   def measure_internal(meth_name : String, name : String?, t_type : TrackingType)
     stack, msummary = measure_data
     mi = @measuring_idx += 1

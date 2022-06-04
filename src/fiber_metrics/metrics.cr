@@ -9,6 +9,11 @@ module Fiber::Metrics
   end
 
   module InstanceMethods
+    macro fiber_measure(name)
+      Fiber.current.measure_internal {{"#{@type.name.id}.#{@def.name}"}}, {{name}}, :measure do
+        {{yield}}
+      end
+    end
   end
 
   macro included

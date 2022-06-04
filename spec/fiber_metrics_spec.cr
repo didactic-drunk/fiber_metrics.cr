@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-
+Colorize.enabled = true
 STDOUT.sync = true
 
 SLEEP_TIME = 0.1

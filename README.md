@@ -57,7 +57,6 @@ class Example
     sleep 0.2
     Bytes.new 32768
   end
-  @[Measure]
 
   @[Measure]
   def baz
