@@ -22,8 +22,8 @@ jobs:
       run: crystal spec -Dpreview_mt --order random --error-on-warnings
     - name: Run tests
       run: crystal spec --order random --error-on-warnings
-    - name: Run bulid
-      run: shards build -Dpreview_mt
-#    - name: Run format
-#      run: crystal tool format --check
+#    - name: Run bulid
+#      run: shards build -Dpreview_mt
+    - name: Run format
+      run: crystal tool format --check
 
