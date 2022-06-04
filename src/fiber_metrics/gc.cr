@@ -1,6 +1,6 @@
 module GC
   alias TrackMallocCallback = (LibC::SizeT) -> Nil
-#  @@track_malloc_func : TrackMallocCallback = ->(size : LibC::SizeT) { }
+  #  @@track_malloc_func : TrackMallocCallback = ->(size : LibC::SizeT) { }
   @@track_malloc_func : TrackMallocCallback?
 
   # :nodoc:
@@ -15,8 +15,8 @@ module GC
 
   # :nodoc:
   def self.malloc(size : LibC::SizeT) : Void*
-# Segfault
-#    @@track_malloc_func.call size
+    # Segfault
+    #    @@track_malloc_func.call size
     @@track_malloc_func.try &.call(size)
     previous_def
   end

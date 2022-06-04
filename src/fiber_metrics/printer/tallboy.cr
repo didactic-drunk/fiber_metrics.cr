@@ -32,10 +32,10 @@ class Fiber
     }.to_a
 
     ffmt = "%.3f" # float
-    ifmt = "%4d" # int
+    ifmt = "%4d"  # int
     mfmt = "%4dK" # mem
 
-    #calls_thresholds = thresholds_for data, 4
+    # calls_thresholds = thresholds_for data, 4
     calls_thresholds = [{0.0, :light_gray}]
     id_thres_min, id_thresholds = thresholds_for data, 1
     bl_thres_min, bl_thresholds = thresholds_for data, 2
@@ -46,10 +46,10 @@ class Fiber
     # Discard data where all values are < .1% of total
     data = data.select { |row|
       row[1].as(Float64) > id_thres_min ||
-      row[2].as(Float64) > bl_thres_min ||
-      row[3].as(Float64) > rt_thres_min ||
-      row[4].as(Float64) > tt_thres_min ||
-      row[5].as(Float64) > mem_thres_min
+        row[2].as(Float64) > bl_thres_min ||
+        row[3].as(Float64) > rt_thres_min ||
+        row[4].as(Float64) > tt_thres_min ||
+        row[5].as(Float64) > mem_thres_min
     }.map { |row|
       [
         colorize(ifmt, row[0], calls_thresholds),
@@ -77,14 +77,13 @@ class Fiber
       rows data
     end
 
-
     table.render io: STDOUT
     puts ""
   end
 
   private def self.thresholds_for(data, colno, color_thresholds = STATS_COLOR_THRESHOLDS)
     column = data.map { |row| row[colno].to_f }
-#    min = column.min
+    #    min = column.min
     max = column.max? || 0.0
 
     thresholds = color_thresholds.map do |thres, color|

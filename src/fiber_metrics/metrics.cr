@@ -5,7 +5,6 @@ module Fiber::Metrics
   end
 
   module ClassMethods
-    
   end
 
   module InstanceMethods

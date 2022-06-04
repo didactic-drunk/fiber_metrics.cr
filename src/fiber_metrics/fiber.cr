@@ -1,7 +1,7 @@
 require "./call_track"
 
 class Fiber
-  alias NameSummaryT = Hash(String|Symbol|Nil, CallTrack)
+  alias NameSummaryT = Hash(String | Symbol | Nil, CallTrack)
   alias MethodSummaryT = Hash(String, NameSummaryT)
 
   @@msummary = MethodSummaryT.new do |h, k|
@@ -47,6 +47,7 @@ class Fiber
   end
 
   @@stats_debug = false
+
   # :nodoc:
   def self.stats_debug=(val)
     @@stats_debug = val
@@ -82,7 +83,7 @@ class Fiber
     mi = @measuring_idx += 1
     if @@stats_debug
       self.to_s(STDOUT)
-      STDOUT << " enter mi=" << @measuring_idx << " 1 ssize=" << stack.size <<  "\n"
+      STDOUT << " enter mi=" << @measuring_idx << " 1 ssize=" << stack.size << "\n"
     end
     cm = stack[mi]
     # Keep one additional CallTrack on end to alloc malloc tracking of CallTrack.new
@@ -91,11 +92,11 @@ class Fiber
     # save prev on stack
     stack[mi - 1] = @cur_call_track
     @cur_call_track = CallTrack.new
-  @cur_call_track.info meth_name, name
+    @cur_call_track.info meth_name, name
 
     start_measure = Time.monotonic
     begin
-        yield
+      yield
     ensure
       elapsed = Time.monotonic - start_measure
 
@@ -144,11 +145,11 @@ class Fiber
     hash = Hash(String, CallTrack).new
     MSUMMARY_MUTEX.synchronize do
       @@msummary.each do |mkey, nsum|
-          nsum.each do |nkey, calls|
-            # FEATURE: String cache
-            k = nkey ? "#{mkey},#{nkey}" : mkey
-            hash[k] = calls
-          end
+        nsum.each do |nkey, calls|
+          # FEATURE: String cache
+          k = nkey ? "#{mkey},#{nkey}" : mkey
+          hash[k] = calls
+        end
       end
     end
     hash

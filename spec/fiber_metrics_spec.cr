@@ -46,7 +46,6 @@ class C
     end
   end
 
-
   @[Measure]
   def recur(n, &block)
     if n == 0
@@ -68,13 +67,12 @@ class C
   end
 end
 
-
 describe Fiber do
   it "works" do
     Fiber.current.name = "spec"
 
     puts ""
-#    Fiber.stats_debug = true
+    #    Fiber.stats_debug = true
 
     fibers = 1
     iter = 4
@@ -112,31 +110,30 @@ describe Fiber do
     puts ""
     Fiber.print_stats
 
-
     stats = Fiber.stats
     stats.size.should eq 3
 
     time_delta = elapsed * 0.2
     stats.each do |name, c|
       case name
-        when "C.foo"
-          c.tt.to_f.should be_close(fibers * iter * 4 * SLEEP_TIME, time_delta)
-          c.blocking.to_f.should be_close(0, 0)
-          (c.mem//1024).should be_close(fibers * iter * 4, fibers * 1)
-        when "C.bar"
-          c.tt.to_f.should be_close(fibers * iter * 3 * SLEEP_TIME, time_delta)
-          c.blocking.to_f.should be_close(0, 0)
-          (c.mem//1024).should be_close(fibers * iter * 8, fibers * 1)
-        when "C.baz"
-          c.tt.to_f.should be_close(fibers * iter * 2 * SLEEP_TIME, time_delta)
-          c.blocking.to_f.should be_close(fibers * iter * blocked_time, time_delta)
-          (c.mem//1024).should be_close(fibers * iter * 16, fibers * 1)
-        else
-          raise "unknown name #{name}"
+      when "C.foo"
+        c.tt.to_f.should be_close(fibers * iter * 4 * SLEEP_TIME, time_delta)
+        c.blocking.to_f.should be_close(0, 0)
+        (c.mem//1024).should be_close(fibers * iter * 4, fibers * 1)
+      when "C.bar"
+        c.tt.to_f.should be_close(fibers * iter * 3 * SLEEP_TIME, time_delta)
+        c.blocking.to_f.should be_close(0, 0)
+        (c.mem//1024).should be_close(fibers * iter * 8, fibers * 1)
+      when "C.baz"
+        c.tt.to_f.should be_close(fibers * iter * 2 * SLEEP_TIME, time_delta)
+        c.blocking.to_f.should be_close(fibers * iter * blocked_time, time_delta)
+        (c.mem//1024).should be_close(fibers * iter * 16, fibers * 1)
+      else
+        raise "unknown name #{name}"
       end
 
       c.rt.to_f.should be_close(fibers * iter * 1 * SLEEP_TIME, time_delta)
-      c.calls.should eq (fibers * iter)
+      c.calls.should eq(fibers * iter)
     end
   end
 
@@ -153,9 +150,8 @@ describe Fiber do
     blocked_ch = Channel(Nil).new
     c = C.new
 
-
     # sleep half_number_of_other_sleeps + 1 to check blocked works
-    blocked_sleep_time = SLEEP_TIME * ((depth*2)+1)
+    blocked_sleep_time = SLEEP_TIME * ((depth*2) + 1)
     blocked_time = SLEEP_TIME
 
     elapsed = Time.measure do
@@ -175,13 +171,12 @@ describe Fiber do
       fibers.times { ch.receive }
     end.to_f
 
-p elapsed
+    p elapsed
 
     Fiber.stats_debug = false
 
     puts ""
     Fiber.print_stats
-
 
     stats = Fiber.stats
     stats.size.should eq 3
@@ -189,27 +184,25 @@ p elapsed
     time_delta = elapsed * 0.1
     stats.each do |name, c|
       case name
-        when "C.recur"
-          c.calls.should eq (fibers * (depth + 1))
+      when "C.recur"
+        c.calls.should eq(fibers * (depth + 1))
 
-          # Only check the minimum.  Arrays & Fibers allocate memory too
-          (c.mem//1024).should be > ((4096 * fibers * depth) // 1024)
-#          c.tt.to_f.should be_close(elapsed, time_delta)
-#          c.rt.to_f.should be_close(elapsed/2, time_delta/2)
-#          c.idle.to_f.should be_close(elapsed/2, time_delta/2)
-        when "C.recur,sleep"
-          c.calls.should eq (fibers * depth)
+        # Only check the minimum.  Arrays & Fibers allocate memory too
+        (c.mem//1024).should be > ((4096 * fibers * depth) // 1024)
+        #          c.tt.to_f.should be_close(elapsed, time_delta)
+        #          c.rt.to_f.should be_close(elapsed/2, time_delta/2)
+        #          c.idle.to_f.should be_close(elapsed/2, time_delta/2)
+      when "C.recur,sleep"
+        c.calls.should eq(fibers * depth)
+      when "C.recur,yield"
+        c.calls.should eq(fibers)
 
-        when "C.recur,yield"
-          c.calls.should eq (fibers)
-
-          (c.mem//1024).should be_close(0, 100)
-        else
-          raise "unknown name #{name}"
+        (c.mem//1024).should be_close(0, 100)
+      else
+        raise "unknown name #{name}"
       end
 
       c.blocking.to_f.should be_close(blocked_time, blocked_time * 0.1)
     end
-
   end
 end
