@@ -3,8 +3,12 @@ name: Crystal CI
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - "*.md"
   pull_request:
     branches: [ main ]
+  schedule:
+    - cron: "42 2 * * 2"
 
 jobs:
   build:
@@ -26,4 +30,3 @@ jobs:
 #      run: shards build -Dpreview_mt
     - name: Run format
       run: crystal tool format --check
-
