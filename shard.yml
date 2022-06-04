@@ -1,14 +1,11 @@
+---
 name: fiber_metrics
-version: 0.1.0
-
+version: 0.7.0
 authors:
-  - Didactic Drunk <1479616+didactic-drunk@users.noreply.github.com>
-
+- Didactic Drunk <1479616+didactic-drunk@users.noreply.github.com>
 crystal: ">= 0.34"
-
 dependencies:
   tallboy:
     github: epoch/tallboy
     branch: master
-
-license: "MIT"
+license: MIT
