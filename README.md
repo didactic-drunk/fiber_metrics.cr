@@ -1,4 +1,4 @@
-# Fiber metrics (Experimental)
+# Fiber metrics
 [![Crystal CI](https://github.com/didactic-drunk/fiber_metrics.cr/actions/workflows/crystal.yml/badge.svg)](https://github.com/didactic-drunk/fiber_metrics.cr/actions/workflows/crystal.yml)
 [![GitHub release](https://img.shields.io/github/release/didactic-drunk/fiber_metrics.cr.svg)](https://github.com/didactic-drunk/fiber_metrics.cr/releases)
 ![GitHub commits since latest release (by date) for a branch](https://img.shields.io/github/commits-since/didactic-drunk/fiber_metrics.cr/latest)
@@ -6,12 +6,15 @@
 
 Track run time, wait time or memory allocations per `Fiber`, method or block.
 
-Designed for low overhead use in production.
+* Designed for low overhead use in production
+* Fast. Shared nothing (when possible)
+* Simple.  0 configuration
 
-NOTE: This shard is modular.
-* `require "fiber_metrics"` Requires the minimum necessary to run with the lowest overhead
-* `require "fiber_metrics/all"` Batteries included
-* * Crystal is monkey patched to record idle/blocking time
+This shard is modular
+| `require` | |
+| --- | --- |
+| `fiber_metrics/all` | Batteries included.  Start here |
+| `fiber_metrics` | Requires the minimum necessary to run with the lowest overhead |
 
 ## TODO
 - [x] `Channel.send,recv`
@@ -41,7 +44,7 @@ NOTE: This shard is modular.
 require "fiber_metrics/all"
 
 class Example
-  # Must be included in each class with an annotation **including subclasses**
+  # Must be included in each class containing a `@[Measure]` annotation **including subclasses**
   include Fiber::Metrics
 
   @[Measure]
