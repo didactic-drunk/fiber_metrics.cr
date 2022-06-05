@@ -1,4 +1,4 @@
-require "./fiber"
+require "../fiber"
 
 class Mutex
   def lock : Nil

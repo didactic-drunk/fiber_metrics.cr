@@ -20,7 +20,7 @@ This shard is modular
 - [x] `Channel.send,recv`
 - [ ] `sleep`
 - [x] `Mutex`
-- [ ] `IO`
+- [x] `IO`
 - [ ] Hook in to `Scheduler`
 - [ ] ENV to control printing
 
@@ -86,6 +86,14 @@ Fiber.print_stats
 ```
 
 Output is best viewed with [`less -RS`, `bat --wrap=never`]
+
+| Column | Description |
+| --- | --- |
+| IdleT | Time idle.  `Channel.recv`, `IO.read`, etc |
+| BlkT | Time blocked.  `Channel.send`, `IO.write`, etc |
+| RunT | RunTime: Time spent within the measured method - [idle, blk], but not sub measured methods |
+| Total | Total elapsed time including sub measured methods |
+| Mem | Memory Allocated |
 
 ## How it works
 

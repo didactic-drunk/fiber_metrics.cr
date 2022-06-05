@@ -1,4 +1,4 @@
-require "./fiber"
+require "../fiber"
 
 class Channel(T)
   def send(value : T) : self
