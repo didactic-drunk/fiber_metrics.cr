@@ -1,6 +1,6 @@
 ---
 name: fiber_metrics
-version: 0.7.0
+version: 0.7.1
 authors:
 - Didactic Drunk <1479616+didactic-drunk@users.noreply.github.com>
 crystal: ">= 0.34"
